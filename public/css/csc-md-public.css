@@ -1,0 +1,3721 @@
+/* ==========================================================================
+   CSC Members Portal — Public Styles
+   Colors: Blue #1F2D57 | Green #44BD70
+   ========================================================================== */
+
+:root {
+    --csc-blue: #1F2D57;
+    --csc-green: #44BD70;
+    --csc-green-dark: #35a85e;
+    --csc-bg: #F0F2F5;
+    --csc-white: #ffffff;
+    --csc-border: #dde1e7;
+    --csc-text: #1a1a2e;
+    --csc-muted: #6b7280;
+    --csc-radius: 14px;
+    --csc-input-r: 8px;
+    --csc-shadow: 0 2px 16px rgba(31, 45, 87, 0.09);
+}
+
+/* --------------------------------------------------------------------------
+   Layout wrapper
+   -------------------------------------------------------------------------- */
+.csc-portal-wrap {
+    min-height: calc(100vh - 220px);
+    background: var(--csc-bg);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 20px 64px;
+    box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Card
+   -------------------------------------------------------------------------- */
+.csc-card {
+    background: var(--csc-white);
+    border-radius: var(--csc-radius);
+    padding: 48px 52px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: var(--csc-shadow);
+    box-sizing: border-box;
+}
+
+.csc-join-card {
+    max-width: 520px;
+}
+
+/* --------------------------------------------------------------------------
+   Logo
+   -------------------------------------------------------------------------- */
+.csc-logo {
+    display: block;
+    margin: 0 auto 28px;
+    max-width: 150px;
+    height: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Typography
+   -------------------------------------------------------------------------- */
+.csc-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    text-align: center;
+    margin: 0 0 14px;
+    line-height: 1.2;
+}
+
+.csc-title-left {
+    text-align: left;
+    font-size: 26px;
+    margin-bottom: 24px;
+}
+
+.csc-subtitle {
+    font-size: 15px;
+    color: var(--csc-muted);
+    text-align: center;
+    margin: 0 0 32px;
+    line-height: 1.6;
+}
+
+.csc-subtitle-sm {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--csc-blue);
+    margin: 24px 0 16px;
+    padding-top: 8px;
+    border-top: 1px solid var(--csc-border);
+}
+
+/* --------------------------------------------------------------------------
+   Form elements
+   -------------------------------------------------------------------------- */
+.csc-form {
+    margin: 0;
+}
+
+.csc-form-group {
+    margin-bottom: 18px;
+}
+
+.csc-form-group label:not(.csc-checkbox-label) {
+    text-align: left;
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--csc-text);
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+}
+
+.csc-form-group input[type="text"],
+.csc-form-group input[type="email"],
+.csc-form-group input[type="password"],
+.csc-form-group input[type="tel"],
+.csc-form-group input[type="url"],
+.csc-form-group textarea,
+.csc-form-group select,
+.csc-typeahead-input {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--csc-border);
+    border-radius: var(--csc-input-r);
+    font-size: 14px;
+    color: var(--csc-text);
+    background: var(--csc-white);
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    box-sizing: border-box;
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.csc-form-group input:focus,
+.csc-form-group textarea:focus,
+.csc-form-group select:focus,
+.csc-typeahead-input:focus {
+    border-color: var(--csc-green);
+    box-shadow: 0 0 0 3px rgba(68, 189, 112, 0.15);
+}
+
+.csc-form-group input::placeholder,
+.csc-form-group textarea::placeholder,
+.csc-typeahead-input::placeholder {
+    color: #b0b8c4;
+}
+
+/* Selects inside form groups lose native arrow due to appearance:none above.
+   Restore a custom chevron */
+.csc-form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   .csc-input — standalone class for any input/select/textarea
+   (covers tel, url, textarea which are not in element selectors above)
+   -------------------------------------------------------------------------- */
+.csc-input {
+    display: block;
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--csc-border);
+    border-radius: var(--csc-input-r);
+    font-size: 14px;
+    color: var(--csc-text);
+    background: var(--csc-white);
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    box-sizing: border-box;
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.csc-input:focus {
+    border-color: var(--csc-green);
+    box-shadow: 0 0 0 3px rgba(68, 189, 112, 0.15);
+}
+
+.csc-input::placeholder {
+    color: #b0b8c4;
+}
+
+/* Select with class csc-input — restore custom arrow */
+select.csc-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   .csc-label — label class used in profile/settings forms
+   -------------------------------------------------------------------------- */
+.csc-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--csc-text);
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+}
+
+/* Two-column row */
+.csc-form-row {
+    display: flex;
+    gap: 14px;
+}
+
+.csc-form-row.csc-form-remember {
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.csc-col {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Checkbox */
+.csc-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--csc-muted);
+    cursor: pointer;
+    margin-top: 10px;
+    user-select: none;
+}
+
+.csc-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--csc-green);
+    flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Select with custom arrow
+   -------------------------------------------------------------------------- */
+.csc-select-wrap {
+    position: relative;
+}
+
+.csc-select-wrap::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--csc-muted);
+    pointer-events: none;
+}
+
+.csc-select {
+    padding-right: 40px !important;
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Typeahead
+   -------------------------------------------------------------------------- */
+.csc-typeahead-wrap {
+    position: relative;
+}
+
+.csc-typeahead-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+.csc-typeahead-dropdown {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    background: var(--csc-white);
+    border: 1.5px solid var(--csc-border);
+    border-radius: var(--csc-input-r);
+    max-height: 210px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(31, 45, 87, 0.12);
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+}
+
+.csc-typeahead-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--csc-text);
+    transition: background 0.12s;
+}
+
+.csc-typeahead-item:hover,
+.csc-typeahead-item.highlighted {
+    background: #f0fdf4;
+    color: var(--csc-green-dark);
+}
+
+.csc-typeahead-item--empty {
+    color: var(--csc-muted);
+    cursor: default;
+    font-style: italic;
+}
+
+/* Region / section header inside grouped typeahead dropdowns */
+.csc-typeahead-group {
+    padding: 8px 16px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--csc-muted);
+    pointer-events: none;
+    user-select: none;
+    border-top: 1px solid var(--csc-border);
+    margin-top: 4px;
+}
+
+.csc-typeahead-group:first-child {
+    border-top: none;
+    margin-top: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+.csc-btn-primary {
+    display: block;
+    width: 100%;
+    padding: 14px 24px;
+    background: var(--csc-green);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.1s;
+    text-align: center;
+    margin-top: 10px;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+}
+
+.csc-btn-primary:hover {
+    background: var(--csc-green-dark);
+}
+
+.csc-btn-primary:active {
+    transform: scale(0.98);
+}
+
+.csc-btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.csc-btn-outline {
+    display: inline-block;
+    padding: 12px 28px;
+    border: 2px solid var(--csc-green);
+    color: var(--csc-green);
+    background: transparent;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.18s, color 0.18s;
+    font-family: inherit;
+}
+
+.csc-btn-outline:hover {
+    background: var(--csc-green);
+    color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Links
+   -------------------------------------------------------------------------- */
+.csc-link {
+    color: var(--csc-green);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.csc-link:hover {
+    text-decoration: underline;
+    color: var(--csc-green-dark);
+}
+
+.csc-join-prompt {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 14px;
+    color: var(--csc-muted);
+}
+
+.csc-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--csc-muted);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 24px;
+    transition: color 0.15s;
+}
+
+.csc-back-link:hover {
+    color: var(--csc-blue);
+}
+
+/* --------------------------------------------------------------------------
+   Alerts / messages
+   -------------------------------------------------------------------------- */
+.csc-alert {
+    padding: 12px 16px;
+    border-radius: var(--csc-input-r);
+    margin-bottom: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.csc-alert.csc-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+}
+
+.csc-alert.csc-success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+}
+
+.csc-alert.csc-info {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1d4ed8;
+}
+
+/* --------------------------------------------------------------------------
+   Modal (Application Under Review — Screen 05)
+   -------------------------------------------------------------------------- */
+.csc-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 45, 87, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.csc-modal {
+    background: var(--csc-white);
+    border-radius: var(--csc-radius);
+    padding: 52px 44px 44px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(31, 45, 87, 0.25);
+    animation: cscModalIn 0.25s ease;
+}
+
+@keyframes cscModalIn {
+    from {
+        opacity: 0;
+        transform: scale(0.94) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.csc-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--csc-muted);
+    padding: 4px;
+    transition: color 0.15s;
+}
+
+.csc-modal-close:hover {
+    color: var(--csc-blue);
+}
+
+.csc-modal-icon {
+    margin-bottom: 24px;
+}
+
+.csc-modal h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 12px;
+}
+
+.csc-modal p {
+    font-size: 14px;
+    color: var(--csc-muted);
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Pending card (when logged-in user is still pending)
+   -------------------------------------------------------------------------- */
+.csc-pending-card {
+    text-align: center;
+}
+
+.csc-pending-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 12px;
+}
+
+.csc-pending-card p {
+    font-size: 15px;
+    color: var(--csc-muted);
+    margin: 0 0 28px;
+    line-height: 1.65;
+}
+
+/* --------------------------------------------------------------------------
+   Step transitions
+   -------------------------------------------------------------------------- */
+.csc-step {
+    animation: cscFadeIn 0.2s ease;
+}
+
+@keyframes cscFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 600px) {
+    .csc-portal-wrap {
+        padding: 24px 12px 48px;
+    }
+
+    .csc-card {
+        padding: 32px 24px;
+    }
+
+    .csc-form-row:not(.csc-form-remember) {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .csc-title {
+        font-size: 24px;
+    }
+
+    .csc-title-left {
+        font-size: 22px;
+    }
+
+    .csc-modal {
+        padding: 40px 28px 32px;
+    }
+}
+
+/* ==========================================================================
+   CSC Member Portal — Dashboard & shared portal layout
+   Values sourced from sidebar.json (Figma export)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Two-panel layout: sidebar (sticky left) + scrollable main
+   -------------------------------------------------------------------------- */
+.csc-member-portal {
+    display: flex;
+    min-height: calc(100vh - 120px);
+    background: var(--csc-bg);
+    position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile top bar — hidden on desktop, shown on mobile
+   -------------------------------------------------------------------------- */
+.csc-mobile-topbar {
+    display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar overlay (mobile drawer backdrop)
+   -------------------------------------------------------------------------- */
+.csc-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1099;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.csc-sidebar-overlay.is-visible {
+    opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar — Figma: width 271px, bg #ffffff, padding 30px
+   -------------------------------------------------------------------------- */
+.csc-sidebar {
+    width: 271px;
+    flex-shrink: 0;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 120px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 10;
+    box-shadow: 1px 0 0 0 var(--csc-border);
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Close button — desktop: hidden */
+.csc-sidebar-close {
+    display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar collapse toggle (desktop only)
+   -------------------------------------------------------------------------- */
+.csc-sidebar-collapse-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: rgba(31, 45, 87, 0.45);
+    flex-shrink: 0;
+    margin-left: auto;
+    transition: color 0.15s;
+}
+
+.csc-sidebar-collapse-btn:hover {
+    color: #1f2d57;
+}
+
+.csc-sidebar-collapse-btn svg {
+    width: 6px;
+    height: 10px;
+    transition: transform 0.25s ease;
+}
+
+/* Collapsed state: arrow points right (rotate 0 = right, default is left pointing) */
+.csc-sidebar.is-collapsed .csc-sidebar-collapse-btn svg {
+    transform: rotate(180deg);
+}
+
+/* --------------------------------------------------------------------------
+   Collapsed sidebar state (desktop)
+   -------------------------------------------------------------------------- */
+.csc-sidebar.is-collapsed {
+    width: 72px;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar__profile {
+    padding: 30px 14px 25px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar__profile-info {
+    display: none;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar-collapse-btn {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar__nav {
+    padding: 20px 12px 0;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar__link {
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar__link>span:not(.csc-sidebar__link-icon) {
+    display: none;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar__footer {
+    padding: 20px 12px 20px;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar__logout {
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar__logout>span {
+    display: none;
+}
+
+/* Tooltip on collapsed icons */
+.csc-sidebar.is-collapsed .csc-sidebar__link,
+.csc-sidebar.is-collapsed .csc-sidebar__logout {
+    position: relative;
+}
+
+.csc-sidebar.is-collapsed .csc-sidebar__link[title]:hover::after,
+.csc-sidebar.is-collapsed .csc-sidebar__logout[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1f2d57;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* --------------------------------------------------------------------------
+   Profile section — Figma: x=30 y=30, avatar 45px #d9d9d9
+   -------------------------------------------------------------------------- */
+.csc-sidebar__profile {
+    padding: 30px 30px 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Avatar — Figma: 45×45px ellipse, fill #d9d9d9 */
+.csc-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    color: #555;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.03em;
+}
+
+/* Mobile avatar in top bar */
+.csc-mobile-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    color: #555;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+}
+
+.csc-sidebar__profile-info {
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Username — Figma: #000000, 16px, Medium */
+.csc-sidebar__name {
+    color: #000000;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Organisation subtitle — Figma: #1f2d57, 12px, Medium, opacity 0.8 */
+.csc-sidebar__org {
+    color: rgba(31, 45, 87, 0.8);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Nav list — Figma: items 48px h, 14px radius, 15px gap, 30px side padding
+   -------------------------------------------------------------------------- */
+.csc-sidebar__nav {
+    flex: 1;
+    padding: 30px 30px 0;
+}
+
+.csc-sidebar__nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Each nav link */
+.csc-sidebar__link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    height: 40px;
+    border-radius: 10px;
+    color: #1f2d57;
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.csc-sidebar__link:hover {
+    background: rgba(31, 45, 87, 0.07);
+    color: #1f2d57;
+    text-decoration: none !important;
+}
+
+/* Active state — Figma: bg #1f2d57, text #ffffff */
+.csc-sidebar__link.is-active {
+    background: #1f2d57;
+    color: #ffffff;
+}
+
+.csc-sidebar__link.is-active:hover {
+    background: #1f2d57;
+    color: #ffffff;
+}
+
+/* Icon */
+.csc-sidebar__link-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.csc-sidebar__link-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   Logout — Figma: y=611, same item size, text #1f2d57 opacity 0.8
+   -------------------------------------------------------------------------- */
+.csc-sidebar__footer {
+    padding: 30px 30px 30px;
+    flex-shrink: 0;
+}
+
+.csc-sidebar__logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 10px;
+    color: rgba(31, 45, 87, 0.8);
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    box-sizing: border-box;
+}
+
+.csc-sidebar__logout:hover {
+    background: rgba(31, 45, 87, 0.07);
+    color: #1f2d57;
+}
+
+.csc-sidebar__logout svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Main content area
+   -------------------------------------------------------------------------- */
+.csc-portal-main {
+    flex: 1;
+    padding: 40px 48px;
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard header
+   -------------------------------------------------------------------------- */
+.csc-dashboard-header {
+    margin-bottom: 36px;
+}
+
+.csc-welcome-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 8px;
+}
+
+.csc-welcome-sub {
+    font-size: 15px;
+    color: var(--csc-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard cards grid
+   -------------------------------------------------------------------------- */
+.csc-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.csc-dash-card {
+    text-decoration: none !important;
+    background: var(--csc-white);
+    border: 1.5px solid var(--csc-border);
+    border-radius: var(--csc-radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s;
+    box-sizing: border-box;
+}
+
+.csc-dash-card:hover {
+    border-color: var(--csc-green);
+    box-shadow: 0 4px 20px rgba(68, 189, 112, 0.14);
+    transform: translateY(-2px);
+    text-decoration: none !important;
+}
+
+.csc-dash-card__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.csc-dash-card__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #f0fdf4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--csc-green);
+    flex-shrink: 0;
+}
+
+.csc-dash-card__icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.csc-dash-card__arrow {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--csc-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--csc-muted);
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+}
+
+.csc-dash-card__arrow svg {
+    width: 14px;
+    height: 14px;
+}
+
+.csc-dash-card:hover .csc-dash-card__arrow {
+    background: var(--csc-green);
+    color: #fff;
+}
+
+.csc-dash-card__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
+
+.csc-dash-card__desc {
+    font-size: 13px;
+    color: var(--csc-muted);
+    line-height: 1.55;
+    margin: 0;
+    flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Portal inner page header
+   -------------------------------------------------------------------------- */
+.csc-portal-page-header {
+    margin-bottom: 28px;
+}
+
+.csc-portal-page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 6px;
+}
+
+.csc-portal-page-sub {
+    font-size: 14px;
+    color: var(--csc-muted);
+    margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Tablet — collapse to 2-col cards
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+    .csc-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .csc-portal-main {
+        padding: 32px 28px;
+    }
+
+    .csc-sidebar {
+        width: 240px;
+    }
+
+    .csc-sidebar__nav {
+        padding: 20px 16px 0;
+    }
+
+    .csc-sidebar__profile {
+        padding: 24px 16px 20px;
+    }
+
+    .csc-sidebar__footer {
+        padding: 20px 16px 20px;
+    }
+
+    .csc-sidebar__link,
+    .csc-sidebar__logout {
+        font-size: 14px;
+        padding: 0 14px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Mobile — slide-in drawer sidebar
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+
+    .csc-member-portal {
+        display: block;
+        min-height: unset;
+    }
+
+    /* Mobile top bar */
+    .csc-mobile-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--csc-blue);
+        padding: 0 16px;
+        height: 56px;
+        position: sticky;
+        top: 0;
+        z-index: 1100;
+    }
+
+    /* Hamburger */
+    .csc-sidebar-toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 36px;
+        height: 36px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+        transition: background 0.15s;
+    }
+
+    .csc-sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .csc-sidebar-toggle span {
+        display: block;
+        height: 2px;
+        background: #fff;
+        border-radius: 2px;
+        transition: transform 0.25s, opacity 0.2s;
+        transform-origin: center;
+    }
+
+    .csc-sidebar-toggle.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .csc-sidebar-toggle.is-open span:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    .csc-sidebar-toggle.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .csc-mobile-section-label {
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        flex: 1;
+        text-align: center;
+    }
+
+    /* Overlay */
+    .csc-sidebar-overlay {
+        display: block;
+        pointer-events: none;
+    }
+
+    .csc-sidebar-overlay.is-visible {
+        pointer-events: auto;
+    }
+
+    /* Sidebar as drawer — reset collapsed state on mobile */
+    .csc-sidebar,
+    .csc-sidebar.is-collapsed {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 271px;
+        height: 100vh;
+        z-index: 1200;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .csc-sidebar.is-open,
+    .csc-sidebar.is-collapsed.is-open {
+        transform: translateX(0);
+    }
+
+    /* Reset collapsed overrides inside the mobile drawer */
+    .csc-sidebar.is-collapsed .csc-sidebar__profile {
+        padding: 52px 30px 25px;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 12px;
+    }
+
+    .csc-sidebar.is-collapsed .csc-sidebar__profile-info {
+        display: block;
+    }
+
+    .csc-sidebar.is-collapsed .csc-sidebar__nav {
+        padding: 30px 30px 0;
+    }
+
+    .csc-sidebar.is-collapsed .csc-sidebar__link {
+        justify-content: flex-start;
+        padding: 0 20px;
+        gap: 10px;
+    }
+
+    .csc-sidebar.is-collapsed .csc-sidebar__link>span:not(.csc-sidebar__link-icon) {
+        display: inline;
+    }
+
+    .csc-sidebar.is-collapsed .csc-sidebar__footer {
+        padding: 30px 30px 30px;
+    }
+
+    .csc-sidebar.is-collapsed .csc-sidebar__logout {
+        justify-content: flex-start;
+        padding: 0 20px;
+        gap: 10px;
+    }
+
+    .csc-sidebar.is-collapsed .csc-sidebar__logout>span {
+        display: inline;
+    }
+
+    /* Close button inside sidebar — dark since sidebar is white */
+    .csc-sidebar-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        background: rgba(31, 45, 87, 0.08);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        color: #1f2d57;
+        transition: background 0.15s;
+        z-index: 1;
+    }
+
+    .csc-sidebar-close:hover {
+        background: rgba(31, 45, 87, 0.15);
+    }
+
+    .csc-sidebar-close svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Hide desktop collapse button on mobile */
+    .csc-sidebar-collapse-btn {
+        display: none;
+    }
+
+    /* Push profile down to clear the close button */
+    .csc-sidebar__profile {
+        padding-top: 52px;
+    }
+
+    .csc-portal-main {
+        padding: 24px 16px;
+    }
+
+    .csc-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .csc-welcome-title {
+        font-size: 22px;
+    }
+
+    .csc-welcome-sub {
+        font-size: 14px;
+    }
+}
+
+/* ==========================================================================
+   MEMBER DIRECTORY
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Tabs row
+   -------------------------------------------------------------------------- */
+.csc-dir-tabs-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--csc-border);
+    padding-bottom: 0;
+}
+
+.csc-dir-tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--csc-muted);
+    text-decoration: none !important;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.csc-dir-tab:hover {
+    color: var(--csc-blue);
+}
+
+.csc-dir-tab.is-active {
+    color: var(--csc-blue);
+    border-bottom-color: var(--csc-blue);
+}
+
+/* --------------------------------------------------------------------------
+   Search & Filter section
+   -------------------------------------------------------------------------- */
+.csc-dir-section {
+    background: var(--csc-white);
+    border-radius: var(--csc-radius);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--csc-shadow);
+}
+
+.csc-dir-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 4px;
+}
+
+.csc-dir-section-sub {
+    font-size: 13px;
+    color: var(--csc-muted);
+    margin: 0 0 18px;
+}
+
+.csc-dir-form {
+    margin: 0;
+}
+
+.csc-dir-search-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.csc-dir-search-wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.csc-dir-search-icon {
+    position: absolute;
+    left: 14px;
+    width: 16px;
+    height: 16px;
+    color: var(--csc-muted);
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+/* Company typeahead — hide the native datalist arrow in Chrome/Safari */
+#csc-reps-company-filter::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    width: 100%;
+    cursor: pointer;
+}
+
+.csc-dir-search-input {
+    width: 100%;
+    height: 42px;
+    padding: 0 14px 0 40px;
+    border: 1px solid var(--csc-border);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--csc-text);
+    outline: none;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.csc-dir-search-input:focus {
+    border-color: var(--csc-blue);
+}
+
+.csc-dir-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 42px;
+    padding: 0 18px;
+    border: 1px solid var(--csc-border);
+    border-radius: 8px;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--csc-blue);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+}
+
+.csc-dir-filter-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.csc-dir-filter-btn:hover,
+.csc-dir-filter-btn.is-active {
+    background: var(--csc-blue);
+    border-color: var(--csc-blue);
+    color: #fff;
+}
+
+/* Filter panel */
+.csc-dir-filter-panel {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--csc-border);
+    /* Allow typeahead dropdowns to overflow the panel */
+    overflow: visible;
+}
+
+/* Typeahead wrapper inside filter grid */
+.csc-dir-ta-wrap {
+    position: relative;
+}
+
+.csc-dir-ta-wrap .csc-typeahead-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.csc-dir-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.csc-dir-filter-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--csc-muted);
+    margin-bottom: 5px;
+}
+
+.csc-dir-filter-input,
+.csc-dir-filter-select {
+    width: 100%;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid var(--csc-border);
+    border-radius: 7px;
+    font-size: 13px;
+    color: var(--csc-text);
+    background: #fff;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+    font-family: inherit;
+}
+
+.csc-dir-filter-select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+    cursor: pointer;
+}
+
+.csc-dir-filter-input:focus,
+.csc-dir-filter-select:focus {
+    border-color: var(--csc-blue);
+}
+
+.csc-dir-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.csc-dir-clear-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--csc-border);
+    border-radius: 7px;
+    background: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--csc-muted);
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.csc-dir-clear-btn svg {
+    width: 12px;
+    height: 12px;
+}
+
+.csc-dir-clear-btn:hover {
+    color: #e53e3e;
+    border-color: #e53e3e;
+}
+
+.csc-dir-apply-btn {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 20px;
+    background: var(--csc-green);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.csc-dir-apply-btn:hover {
+    background: var(--csc-green-dark);
+}
+
+/* --------------------------------------------------------------------------
+   Directory table
+   -------------------------------------------------------------------------- */
+.csc-dir-table-wrap {
+    background: var(--csc-white);
+    border-radius: var(--csc-radius);
+    box-shadow: var(--csc-shadow);
+    overflow: hidden;
+}
+
+.csc-dir-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.csc-dir-table thead tr {
+    border-bottom: 1px solid var(--csc-border);
+}
+
+.csc-dir-table th {
+    padding: 14px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--csc-muted);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.csc-dir-th-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: inherit;
+    text-decoration: none !important;
+    cursor: default;
+}
+
+a.csc-dir-th-link {
+    cursor: pointer;
+}
+
+a.csc-dir-th-link:hover {
+    color: var(--csc-blue);
+}
+
+.csc-dir-sort-icon {
+    font-size: 10px;
+    opacity: 0.5;
+}
+
+.csc-dir-row {
+    border-bottom: 1px solid var(--csc-border);
+    transition: background 0.12s;
+    cursor: pointer;
+}
+
+.csc-dir-row:last-child {
+    border-bottom: none;
+}
+
+.csc-dir-row:hover {
+    background: rgba(31, 45, 87, 0.03);
+}
+
+.csc-dir-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--csc-text);
+    vertical-align: middle;
+}
+
+.csc-dir-org-link {
+    font-weight: 600;
+    color: var(--csc-blue);
+    text-decoration: none !important;
+}
+
+.csc-dir-org-link:hover {
+    text-decoration: underline !important;
+}
+
+.csc-dir-td-location {
+    color: var(--csc-muted);
+    font-size: 13px;
+}
+
+.csc-dir-td-empty {
+    color: var(--csc-muted);
+}
+
+/* Tags */
+.csc-dir-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 2px 3px 2px 0;
+    white-space: nowrap;
+}
+
+.csc-dir-tag--sector {
+    background: rgba(31, 45, 87, 0.08);
+    color: var(--csc-blue);
+}
+
+.csc-dir-tag--exp.csc-dir-tag--0 {
+    background: rgba(31, 45, 87, 0.10);
+    color: #1f2d57;
+}
+
+.csc-dir-tag--exp.csc-dir-tag--1 {
+    background: rgba(68, 189, 112, 0.15);
+    color: #2a9455;
+}
+
+.csc-dir-tag--exp.csc-dir-tag--2 {
+    background: rgba(31, 45, 87, 0.18);
+    color: #0f1c3f;
+}
+
+.csc-dir-tag--more {
+    background: var(--csc-border);
+    color: var(--csc-muted);
+}
+
+/* Empty state */
+.csc-dir-empty {
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--csc-muted);
+}
+
+.csc-dir-empty svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.csc-dir-empty p {
+    font-size: 15px;
+    margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Pagination
+   -------------------------------------------------------------------------- */
+.csc-dir-pagination {
+    padding: 16px 20px;
+    border-top: 1px solid var(--csc-border);
+    display: flex;
+    justify-content: center;
+}
+
+.csc-dir-pagination .page-numbers {
+    display: inline-flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 4px;
+    align-items: center;
+}
+
+.csc-dir-pagination .page-numbers li a,
+.csc-dir-pagination .page-numbers li span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 6px;
+    border: 1px solid var(--csc-border);
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--csc-blue);
+    text-decoration: none !important;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.csc-dir-pagination .page-numbers li a:hover {
+    background: rgba(31, 45, 87, 0.07);
+}
+
+.csc-dir-pagination .page-numbers li span.current {
+    background: var(--csc-blue);
+    border-color: var(--csc-blue);
+    color: #fff;
+}
+
+.csc-dir-pagination .page-numbers li a svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Company detail page — main area tweak
+   -------------------------------------------------------------------------- */
+.csc-portal-main--company {
+    padding-top: 28px;
+}
+
+/* Back navigation */
+.csc-co-back {
+    margin-bottom: 16px;
+}
+
+.csc-co-back__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #637083;
+    text-decoration: none !important;
+    transition: color 0.15s;
+}
+
+.csc-co-back__link svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.csc-co-back__link:hover {
+    color: var(--csc-blue);
+}
+
+/* --------------------------------------------------------------------------
+   Gradient banner
+   -------------------------------------------------------------------------- */
+.csc-co-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: linear-gradient(110deg, #192d55 40%, #34a36f 100%);
+    border-radius: 12px;
+    padding: 15px 22px;
+    margin-bottom: 0;
+    /* Banner bottom is "absorbed" by the identity block's negative margin */
+    position: relative;
+    z-index: 0;
+}
+
+.csc-co-banner__left,
+.csc-co-banner__right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.csc-co-banner__right {
+    align-items: flex-end;
+}
+
+.csc-co-banner__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.csc-co-banner__row--right {
+    justify-content: flex-end;
+}
+
+.csc-co-banner__label {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.75);
+    white-space: nowrap;
+}
+
+/* Pills on the gradient banner */
+.csc-co-banner-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 12px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #ffffff;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+}
+
+.csc-co-banner-pill--count {
+    padding: 3px 10px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Company identity — logo + name + tagline (overlaps banner bottom)
+   -------------------------------------------------------------------------- */
+.csc-co-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: -48px;
+    /* pull up to overlap banner */
+    padding-bottom: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Logo circle — 100×100px, white border ring */
+.csc-co-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #f0f4fa;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    margin-bottom: 14px;
+}
+
+.csc-co-logo__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.csc-co-logo__initials {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    letter-spacing: 0.03em;
+}
+
+.csc-co-name {
+    font-size: 26px;
+    font-weight: 500;
+    color: #000000;
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
+
+.csc-co-tagline {
+    font-size: 14px;
+    color: #637083;
+    line-height: 1.6;
+    margin: 0 0 14px;
+    max-width: 580px;
+}
+
+/* Location / website / phone row below tagline */
+.csc-co-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    justify-content: center;
+}
+
+.csc-co-meta__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #637083;
+    text-decoration: none !important;
+}
+
+.csc-co-meta__item svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.csc-co-meta__item--link:hover {
+    color: var(--csc-blue);
+    text-decoration: underline !important;
+}
+
+/* --------------------------------------------------------------------------
+   Rep cards grid
+   -------------------------------------------------------------------------- */
+.csc-reps-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Card is an <a> tag — clickable */
+.csc-rep-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--csc-white);
+    border: 1px solid var(--csc-border);
+    border-radius: 14px;
+    padding: 20px;
+    text-decoration: none !important;
+    box-shadow: 0 1px 6px rgba(31, 45, 87, 0.07);
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+    cursor: pointer;
+}
+
+.csc-rep-card:hover {
+    border-color: var(--csc-blue);
+    box-shadow: 0 4px 18px rgba(31, 45, 87, 0.12);
+    transform: translateY(-2px);
+    text-decoration: none !important;
+}
+
+/* Top row: avatar + name/title */
+.csc-rep-card__top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.csc-rep-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    color: #555;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.03em;
+    overflow: hidden;
+}
+
+.csc-rep-avatar__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.csc-rep-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.csc-rep-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000000;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.csc-rep-title {
+    font-size: 14px;
+    color: #000000;
+    line-height: 1.3;
+}
+
+/* Contact row: email + phone side by side */
+.csc-rep-contacts {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+}
+
+.csc-rep-contact-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #637083;
+    text-decoration: none !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.csc-rep-contact-item svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #637083;
+}
+
+/* Expertise tags — dark navy pills */
+.csc-rep-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.csc-rep-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 12px;
+    background: #1f2d57;
+    color: #ffffff;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Representatives table — avatar + name cell
+   -------------------------------------------------------------------------- */
+.csc-dir-rep-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--csc-blue);
+    text-decoration: none !important;
+}
+
+.csc-dir-rep-link:hover {
+    text-decoration: underline !important;
+}
+
+.csc-dir-rep-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    color: #555;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    letter-spacing: 0.03em;
+}
+
+.csc-dir-rep-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.csc-dir-td-email {
+    color: var(--csc-muted);
+    font-size: 13px;
+    text-decoration: none !important;
+}
+
+.csc-dir-td-email:hover {
+    color: var(--csc-blue);
+    text-decoration: underline !important;
+}
+
+/* --------------------------------------------------------------------------
+   Single member profile card
+   -------------------------------------------------------------------------- */
+.csc-member-profile-card {
+    background: var(--csc-white);
+    border: 1.5px solid var(--csc-border);
+    border-radius: var(--csc-radius);
+    box-shadow: var(--csc-shadow);
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.csc-member-profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 3px solid var(--csc-border);
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+.csc-member-profile-avatar__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.csc-member-profile-avatar__initials {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.csc-member-profile-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 6px;
+}
+
+.csc-member-profile-jobtitle {
+    font-size: 15px;
+    color: var(--csc-muted);
+    margin: 0 0 12px;
+}
+
+.csc-member-profile-org {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--csc-muted);
+    margin: 0 0 20px;
+    justify-content: center;
+}
+
+.csc-member-profile-org svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+}
+
+.csc-member-profile-org__link {
+    color: var(--csc-blue);
+    font-weight: 500;
+    text-decoration: none !important;
+}
+
+.csc-member-profile-org__link:hover {
+    text-decoration: underline !important;
+}
+
+.csc-member-profile-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+    width: 100%;
+}
+
+.csc-member-profile-contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--csc-muted);
+    text-decoration: none !important;
+    justify-content: center;
+}
+
+.csc-member-profile-contact svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--csc-muted);
+}
+
+.csc-member-profile-contact:hover {
+    color: var(--csc-blue);
+    text-decoration: underline !important;
+}
+
+.csc-member-profile-expertise {
+    width: 100%;
+    padding-top: 20px;
+    border-top: 1px solid var(--csc-border);
+    margin-bottom: 24px;
+}
+
+.csc-member-profile-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+}
+
+.csc-member-profile-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.csc-member-profile-co-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--csc-green);
+    text-decoration: none !important;
+    margin-top: 4px;
+    transition: color 0.15s;
+}
+
+.csc-member-profile-co-link svg {
+    width: 14px;
+    height: 14px;
+}
+
+.csc-member-profile-co-link:hover {
+    color: var(--csc-green-dark);
+}
+
+/* --------------------------------------------------------------------------
+   Directory mobile responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .csc-dir-tabs-row {
+        margin-bottom: 16px;
+    }
+
+    .csc-dir-section {
+        padding: 16px;
+    }
+
+    .csc-dir-search-row {
+        flex-wrap: wrap;
+    }
+
+    .csc-dir-filter-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .csc-dir-table-wrap {
+        overflow-x: auto;
+    }
+
+    .csc-dir-table {
+        min-width: 600px;
+    }
+
+    .csc-reps-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .csc-co-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .csc-co-banner__right {
+        align-items: flex-start;
+    }
+
+    .csc-co-banner__row--right {
+        justify-content: flex-start;
+    }
+
+    .csc-co-identity {
+        margin-top: -36px;
+    }
+
+    .csc-rep-contacts {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .csc-member-profile-card {
+        padding: 28px 20px;
+    }
+}
+
+/* ==========================================================================
+   FORUM
+   ========================================================================== */
+
+.csc-forum-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.csc-forum-tagline {
+    font-size: 14px;
+    color: var(--csc-muted);
+    margin: 0;
+    line-height: 1.6;
+    max-width: 520px;
+}
+
+.csc-forum-create-btn {
+    display: inline-flex !important;
+    align-items: center;
+    width: auto !important;
+    height: 40px;
+    padding: 0 20px !important;
+    font-size: 14px !important;
+    margin-top: 0 !important;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.csc-forum-search-form {
+    margin-bottom: 16px;
+}
+
+.csc-forum-search-form .csc-dir-search-wrap {
+    max-width: 480px;
+}
+
+/* Category tab strip */
+.csc-forum-cats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--csc-border);
+    padding-bottom: 0;
+}
+
+.csc-forum-cat-tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--csc-muted);
+    text-decoration: none !important;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+}
+
+.csc-forum-cat-tab:hover {
+    color: var(--csc-blue);
+}
+
+.csc-forum-cat-tab.is-active {
+    color: var(--csc-blue);
+    font-weight: 700;
+    border-bottom-color: var(--csc-blue);
+}
+
+/* Topic list */
+.csc-forum-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--csc-white);
+    border-radius: var(--csc-radius);
+    box-shadow: var(--csc-shadow);
+    overflow: hidden;
+}
+
+.csc-forum-topic {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--csc-border);
+    text-decoration: none !important;
+    transition: background 0.12s;
+}
+
+.csc-forum-topic:last-child {
+    border-bottom: none;
+}
+
+.csc-forum-topic:hover {
+    background: rgba(31, 45, 87, 0.025);
+    text-decoration: none !important;
+}
+
+.csc-forum-topic__main {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Category pill */
+.csc-forum-topic-cat {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+    white-space: nowrap;
+}
+
+/* Category pill colours are applied via inline style (PHP palette) so they
+   work for any admin-created category without needing CSS updates. */
+
+.csc-forum-topic__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--csc-blue);
+    margin: 0 0 4px;
+    line-height: 1.4;
+}
+
+.csc-forum-topic__excerpt {
+    font-size: 13px;
+    color: var(--csc-muted);
+    margin: 0 0 8px;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.csc-forum-topic__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--csc-muted);
+}
+
+.csc-forum-topic__author {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.csc-forum-topic__avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    color: #555;
+    font-size: 10px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.csc-forum-topic__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.csc-forum-topic__time {
+    color: var(--csc-muted);
+}
+
+/* Stats (reply + like counts) */
+.csc-forum-topic__stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    padding-top: 4px;
+}
+
+.csc-forum-topic__stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--csc-muted);
+    font-weight: 500;
+}
+
+.csc-forum-topic__stat svg {
+    width: 15px;
+    height: 15px;
+}
+
+.csc-forum-topic__stat.is-liked {
+    color: #e53e3e;
+}
+
+/* --------------------------------------------------------------------------
+   Forum — Create conversation modal overrides
+   -------------------------------------------------------------------------- */
+.csc-forum-modal {
+    max-width: 520px;
+    text-align: left;
+    padding: 36px 40px 32px;
+}
+
+.csc-forum-modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 12px;
+}
+
+.csc-forum-modal-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--csc-green-dark);
+    background: rgba(68, 189, 112, 0.08);
+    border: 1px solid rgba(68, 189, 112, 0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.csc-forum-modal-notice svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.csc-forum-modal-error {
+    font-size: 13px;
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    padding: 8px 12px;
+    margin: 0 0 12px;
+}
+
+.csc-forum-modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.csc-forum-modal-actions .csc-btn-outline {
+    padding: 9px 20px;
+    font-size: 14px;
+}
+
+.csc-forum-modal-actions .csc-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    height: 40px;
+    padding: 0 22px;
+    font-size: 14px;
+    margin-top: 0;
+}
+
+.csc-forum-tag-count {
+    font-size: 12px;
+    color: var(--csc-muted);
+    margin-top: 4px;
+    display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Forum — Thread view
+   -------------------------------------------------------------------------- */
+.csc-forum-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.csc-forum-thread-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 8px 0 10px;
+    line-height: 1.35;
+}
+
+.csc-forum-thread-post {
+    background: var(--csc-white);
+    border: 1px solid var(--csc-border);
+    border-radius: var(--csc-radius);
+    padding: 20px 24px;
+    margin-bottom: 12px;
+}
+
+.csc-forum-thread-post--op {
+    margin-bottom: 6px;
+}
+
+.csc-forum-thread-post__header {
+    margin-bottom: 12px;
+}
+
+.csc-forum-thread-post__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--csc-muted);
+}
+
+.csc-forum-thread-post__meta strong {
+    color: var(--csc-blue);
+}
+
+.csc-forum-thread-post__time {
+    color: var(--csc-muted);
+}
+
+.csc-forum-thread-post__body {
+    font-size: 14px;
+    color: var(--csc-text);
+    line-height: 1.7;
+}
+
+.csc-forum-thread-post__body p {
+    margin: 0 0 12px;
+}
+
+.csc-forum-thread-post__body p:last-child {
+    margin-bottom: 0;
+}
+
+.csc-forum-thread-post__footer {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--csc-border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.csc-forum-like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--csc-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 0.15s;
+    font-family: inherit;
+}
+
+.csc-forum-like-btn svg {
+    width: 16px;
+    height: 16px;
+    transition: fill 0.15s;
+}
+
+.csc-forum-like-btn.is-liked,
+.csc-forum-like-btn:hover {
+    color: #e53e3e;
+}
+
+.csc-forum-replies {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-left: 20px;
+    margin-bottom: 12px;
+}
+
+/* Reply box */
+.csc-forum-reply-box {
+    background: var(--csc-white);
+    border: 1px solid var(--csc-border);
+    border-radius: var(--csc-radius);
+    padding: 20px 24px;
+}
+
+.csc-forum-reply-input {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.csc-forum-reply-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.csc-forum-reply-submit {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    width: auto !important;
+    height: 40px;
+    padding: 0 20px !important;
+    font-size: 14px !important;
+    margin-top: 0 !important;
+}
+
+.csc-forum-reply-submit svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ==========================================================================
+   NEWSLETTERS & RESOURCES
+   ========================================================================== */
+.csc-nl-section {
+    margin-bottom: 36px;
+}
+
+.csc-nl-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.csc-nl-section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0;
+}
+
+.csc-nl-visit-btn {
+    display: inline-flex !important;
+    width: auto !important;
+    height: 38px;
+    padding: 0 20px !important;
+    font-size: 13px !important;
+    margin-top: 0 !important;
+}
+
+.csc-nl-resource-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--csc-muted);
+    background: var(--csc-white);
+    border: 1px solid var(--csc-border);
+    border-radius: 10px;
+    padding: 14px 18px;
+}
+
+.csc-nl-resource-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--csc-muted);
+}
+
+.csc-nl-resource-link {
+    color: var(--csc-blue);
+    font-weight: 500;
+    text-decoration: none !important;
+}
+
+.csc-nl-resource-link:hover {
+    text-decoration: underline !important;
+}
+
+/* Newsletter list */
+.csc-nl-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--csc-white);
+    border-radius: var(--csc-radius);
+    box-shadow: var(--csc-shadow);
+    overflow: hidden;
+}
+
+.csc-nl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--csc-border);
+}
+
+.csc-nl-item:last-child {
+    border-bottom: none;
+}
+
+.csc-nl-item__date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--csc-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 2px;
+    min-width: 130px;
+}
+
+.csc-nl-item__date svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.csc-nl-item__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.csc-nl-item__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--csc-blue);
+    margin: 0 0 4px;
+    line-height: 1.4;
+}
+
+.csc-nl-item__excerpt {
+    font-size: 13px;
+    color: var(--csc-muted);
+    margin: 0 0 8px;
+    line-height: 1.55;
+}
+
+.csc-nl-item__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+@media (max-width: 768px) {
+    .csc-forum-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .csc-forum-cats {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        padding-bottom: 0;
+    }
+
+    .csc-forum-modal {
+        padding: 28px 20px 24px;
+    }
+
+    .csc-forum-topic__stats {
+        flex-direction: row;
+    }
+
+    .csc-nl-item {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .csc-nl-item__date {
+        min-width: unset;
+    }
+}
+
+/* ==========================================================================
+   NOT FOUND CARD
+   ========================================================================== */
+.csc-not-found-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 120px);
+    padding: 40px 24px;
+}
+.csc-not-found-card {
+    background: #ffffff;
+    border: 1px solid #e8edf2;
+    border-radius: 16px;
+    padding: 56px 48px;
+    text-align: center;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+.csc-not-found-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: #f3f5f9;
+    margin: 0 auto 24px;
+    color: #a0aec0;
+}
+.csc-not-found-icon svg {
+    width: 44px;
+    height: 44px;
+}
+.csc-not-found-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #192d55;
+    margin: 0 0 10px;
+}
+.csc-not-found-message {
+    font-size: 14px;
+    color: #637083;
+    line-height: 1.6;
+    margin: 0 0 28px;
+}
+.csc-not-found-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: auto;
+    padding: 0 24px;
+    height: 42px;
+    font-size: 14px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+.csc-not-found-btn svg {
+    width: 16px;
+    height: 16px;
+}
+@media (max-width: 640px) {
+    .csc-not-found-card {
+        padding: 40px 24px;
+    }
+}
+
+/* ==========================================================================
+   TERMS OF USE
+   ========================================================================== */
+.csc-terms-body {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 40px 48px;
+    margin-top: 24px;
+    border: 1px solid #e8edf2;
+    line-height: 1.75;
+    color: #2d3748;
+    max-width: 860px;
+}
+
+.csc-terms-body h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #192d55;
+    margin: 0 0 20px;
+}
+
+.csc-terms-body h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #192d55;
+    margin: 28px 0 8px;
+}
+
+.csc-terms-body p {
+    font-size: 14px;
+    color: #4a5568;
+    margin: 0 0 12px;
+}
+
+.csc-terms-body em {
+    color: #8899aa;
+    font-size: 13px;
+}
+
+@media (max-width: 640px) {
+    .csc-terms-body {
+        padding: 24px 20px;
+    }
+}
+
+/* ==========================================================================
+   PAGE HEADER (shared by profile & settings)
+   ========================================================================== */
+.csc-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.csc-page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0;
+}
+
+.csc-page-subtitle {
+    font-size: 14px;
+    color: #637083;
+    margin: 4px 0 0;
+}
+
+/* Compact Save button in page header — overrides the full-width default */
+.csc-page-header .csc-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    height: 40px;
+    padding: 0 22px;
+    font-size: 14px;
+    margin-top: 0;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   SETTINGS / PROFILE — shared tab strip
+   ========================================================================== */
+.csc-settings-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--csc-border);
+    margin-bottom: 28px;
+}
+
+.csc-settings-tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--csc-muted);
+    text-decoration: none !important;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    cursor: pointer;
+}
+
+.csc-settings-tab:first-child {
+    padding-left: 0;
+}
+
+.csc-settings-tab:hover {
+    color: var(--csc-blue);
+}
+
+.csc-settings-tab.is-active {
+    color: var(--csc-blue);
+    font-weight: 600;
+    border-bottom-color: var(--csc-blue);
+}
+
+.csc-settings-body {
+    background: var(--csc-white);
+    border-radius: var(--csc-radius);
+    box-shadow: var(--csc-shadow);
+    padding: 32px 36px;
+}
+
+/* ==========================================================================
+   PROFILE — identity / avatar header
+   ========================================================================== */
+.csc-profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--csc-border);
+}
+
+.csc-profile-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.csc-avatar--xl {
+    width: 72px;
+    height: 72px;
+    font-size: 22px;
+}
+
+.csc-avatar--square {
+    border-radius: 14px;
+}
+
+.csc-avatar-edit-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 22px;
+    height: 22px;
+    background: var(--csc-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+}
+
+.csc-avatar-edit-badge svg {
+    width: 10px;
+    height: 10px;
+    color: #fff;
+}
+
+.csc-profile-identity-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin-bottom: 2px;
+}
+
+.csc-profile-identity-org {
+    font-size: 13px;
+    color: var(--csc-muted);
+    margin-bottom: 8px;
+}
+
+.csc-avatar--photo {
+    object-fit: cover;
+}
+
+.csc-avatar-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--csc-muted);
+    cursor: pointer;
+    opacity: 1;
+    transition: color 0.15s, opacity 0.15s;
+}
+
+.csc-avatar-add-btn:hover {
+    color: var(--csc-blue);
+}
+
+.csc-avatar-add-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.csc-avatar-add-btn.is-uploading {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.csc-avatar-add-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ==========================================================================
+   PROFILE — fields layout
+   ========================================================================== */
+.csc-profile-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Two-column grid row (used in both Personal and Company tabs) */
+.csc-profile-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+/* Typeahead dropdown within profile rows must overflow the grid */
+.csc-profile-row .csc-typeahead-wrap {
+    position: relative;
+}
+
+/* County group hidden state — handled via inline style from PHP,
+   toggled by JS. No extra class needed. */
+
+.csc-form-group--full {
+    grid-column: 1 / -1;
+}
+
+.csc-form-group--md {
+    max-width: 420px;
+}
+
+.csc-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.csc-textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+}
+
+/* Website field with copy button */
+.csc-input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.csc-input-with-icon .csc-input {
+    padding-right: 44px;
+}
+
+.csc-input-icon-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--csc-muted);
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+}
+
+.csc-input-icon-btn:hover {
+    color: var(--csc-blue);
+}
+
+.csc-input-icon-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ==========================================================================
+   SKILLS TAG INPUT
+   ========================================================================== */
+.csc-tag-input-wrap {
+    border: 1px solid var(--csc-border);
+    border-radius: var(--csc-input-r);
+    padding: 8px 10px;
+    background: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    cursor: text;
+    transition: border-color 0.15s;
+    min-height: 44px;
+}
+
+.csc-tag-input-wrap:focus-within {
+    border-color: var(--csc-blue);
+}
+
+.csc-tag-chips {
+    display: contents;
+}
+
+.csc-tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(31, 45, 87, 0.09);
+    color: var(--csc-blue);
+    border-radius: 20px;
+    padding: 3px 10px 3px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.csc-tag-chip-remove {
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+    font-size: 15px;
+    color: rgba(31, 45, 87, 0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.csc-tag-chip-remove:hover {
+    color: #e53e3e;
+}
+
+.csc-tag-input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: var(--csc-text);
+    flex: 1;
+    min-width: 140px;
+    background: transparent;
+    padding: 2px 0;
+}
+
+/* ==========================================================================
+   SETTINGS — sections & toggles
+   ========================================================================== */
+.csc-settings-section {
+    margin-bottom: 8px;
+}
+
+.csc-settings-section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 24px;
+}
+
+.csc-settings-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.csc-settings-toggle-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--csc-border);
+}
+
+.csc-settings-toggle-row:last-of-type {
+    border-bottom: none;
+}
+
+.csc-settings-toggle-info {
+    flex: 1;
+}
+
+.csc-settings-toggle-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--csc-blue);
+    margin-bottom: 4px;
+}
+
+.csc-settings-toggle-desc {
+    font-size: 13px;
+    color: var(--csc-muted);
+    line-height: 1.5;
+    max-width: 520px;
+}
+
+/* iOS-style toggle switch */
+.csc-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.csc-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.csc-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: #d1d5db;
+    border-radius: 24px;
+    transition: background 0.2s;
+}
+
+.csc-toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.csc-toggle input:checked+.csc-toggle-slider {
+    background: var(--csc-green);
+}
+
+.csc-toggle input:checked+.csc-toggle-slider::before {
+    transform: translateX(20px);
+}
+
+.csc-toggle input:focus-visible+.csc-toggle-slider {
+    outline: 2px solid var(--csc-blue);
+    outline-offset: 2px;
+}
+
+/* Active sessions block */
+.csc-settings-sessions {
+    padding: 20px 0 4px;
+}
+
+.csc-settings-sessions-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--csc-blue);
+    margin-bottom: 6px;
+}
+
+.csc-settings-sessions-info {
+    font-size: 13px;
+    color: var(--csc-muted);
+    margin-bottom: 10px;
+}
+
+.csc-link-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--csc-blue);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.csc-link-btn:hover {
+    color: var(--csc-green-dark);
+}
+
+/* Password strength */
+.csc-password-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.csc-password-wrap .csc-input {
+    padding-right: 44px;
+}
+
+.csc-pw-toggle {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--csc-muted);
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+}
+
+.csc-pw-toggle:hover {
+    color: var(--csc-blue);
+}
+
+.csc-pw-eye {
+    width: 18px;
+    height: 18px;
+}
+
+.csc-pw-strength {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.csc-pw-strength-bar {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+}
+
+.csc-pw-strength-bar span {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--csc-border);
+    transition: background 0.2s;
+}
+
+.csc-pw-strength-bar.strength-1 span:nth-child(1) {
+    background: #e53e3e;
+}
+
+.csc-pw-strength-bar.strength-2 span:nth-child(-n+2) {
+    background: #ed8936;
+}
+
+.csc-pw-strength-bar.strength-3 span:nth-child(-n+3) {
+    background: #ecc94b;
+}
+
+.csc-pw-strength-bar.strength-4 span {
+    background: var(--csc-green);
+}
+
+.csc-pw-strength-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--csc-muted);
+    min-width: 48px;
+    text-align: right;
+}
+
+/* Support box */
+.csc-support-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(68, 189, 112, 0.08);
+    border: 1px solid rgba(68, 189, 112, 0.3);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-top: 28px;
+}
+
+.csc-support-box__icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--csc-green-dark);
+    margin-top: 1px;
+}
+
+.csc-support-box__icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.csc-support-box__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin-bottom: 3px;
+}
+
+.csc-support-box__text {
+    font-size: 13px;
+    color: var(--csc-muted);
+}
+
+.csc-support-box__text a {
+    color: var(--csc-blue);
+    font-weight: 500;
+}
+
+/* Settings notice (no org) */
+.csc-settings-notice {
+    padding: 32px;
+    text-align: center;
+    color: var(--csc-muted);
+    font-size: 15px;
+}
+
+/* ==========================================================================
+   PROFILE + SETTINGS — mobile responsive
+   ========================================================================== */
+@media (max-width: 768px) {
+    .csc-settings-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .csc-settings-body {
+        padding: 20px 16px;
+    }
+
+    .csc-profile-row {
+        grid-template-columns: 1fr;
+    }
+
+    .csc-profile-identity {
+        flex-wrap: wrap;
+    }
+
+    /* Stack all two-column rows on mobile */
+    .csc-profile-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Always show county on mobile (stacked, not hidden behind country) */
+    #csc-county-group {
+        display: block !important;
+    }
+
+    .csc-settings-toggle-row {
+        gap: 16px;
+    }
+}
