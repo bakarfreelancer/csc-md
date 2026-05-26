@@ -42,6 +42,11 @@ class Csc_Md {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-csc-newsletters.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-csc-terms.php';
 
+		// Dev / admin tools
+		if ( is_admin() ) {
+			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-csc-seeder.php';
+		}
+
 		// Admin
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-csc-md-admin.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-csc-member-admin.php';
@@ -109,6 +114,12 @@ class Csc_Md {
 		// Terms of Use
 		$terms = new Csc_Terms();
 		$terms->register_hooks();
+
+		// Test data seeder (admin only)
+		if ( is_admin() ) {
+			$seeder = new Csc_Seeder();
+			$seeder->register_hooks();
+		}
 	}
 
 	/**
@@ -122,15 +133,17 @@ class Csc_Md {
 		}
 
 		$map = array(
-			'members-login'         => '[csc_login]',
-			'join-csc'              => '[csc_join]',
-			'member-dashboard'      => '[csc_dashboard]',
-			'member-directory'      => '[csc_directory]',
-			'update-account'        => '[csc_update_account]',
-			'member-settings'       => '[csc_settings]',
-			'terms-of-use'          => '[csc_terms]',
-			'member-forum'          => '[csc_forum]',
-			'member-newsletters'    => '[csc_newsletters]',
+			'members-login'           => '[csc_login]',
+			'join-csc'                => '[csc_join]',
+			'member-dashboard'        => '[csc_dashboard]',
+			'member-directory'        => '[csc_directory]',
+			'update-account'          => '[csc_update_account]',
+			'member-settings'         => '[csc_settings]',
+			'terms-of-use'            => '[csc_terms]',
+			'member-forum'            => '[csc_forum]',
+			'member-newsletters'      => '[csc_newsletters]',
+			'members-forgot-password' => '[csc_forgot_password]',
+			'members-set-password'    => '[csc_set_password]',
 		);
 
 		foreach ( $map as $slug => $shortcode ) {

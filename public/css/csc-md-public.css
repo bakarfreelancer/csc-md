@@ -2898,14 +2898,40 @@ a.csc-dir-th-link:hover {
 
 .csc-nl-item {
     display: flex;
+    text-decoration: none !important;
     align-items: flex-start;
     gap: 16px;
     padding: 16px 20px;
     border-bottom: 1px solid var(--csc-border);
+    text-decoration: none;
+    transition: background 0.15s;
 }
 
 .csc-nl-item:last-child {
     border-bottom: none;
+}
+
+.csc-nl-item:hover {
+    background: #f8fafc;
+}
+
+.csc-nl-item__arrow {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--csc-muted);
+    padding-top: 2px;
+    transition: transform 0.15s;
+}
+
+.csc-nl-item:hover .csc-nl-item__arrow {
+    transform: translateX(3px);
+    color: var(--csc-blue);
+}
+
+.csc-nl-item__arrow svg {
+    width: 16px;
+    height: 16px;
 }
 
 .csc-nl-item__date {
@@ -2985,6 +3011,89 @@ a.csc-dir-th-link:hover {
 }
 
 /* ==========================================================================
+   NEWSLETTER SINGLE VIEW
+   ========================================================================== */
+.csc-nl-single {
+    background: #ffffff;
+    border: 1px solid #e8edf2;
+    border-radius: 12px;
+    padding: 40px 48px;
+    margin-top: 24px;
+    max-width: 800px;
+}
+
+.csc-nl-single__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--csc-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+}
+
+.csc-nl-single__meta svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.csc-nl-single__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--csc-blue);
+    margin: 0 0 16px;
+    line-height: 1.3;
+}
+
+.csc-nl-single__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 28px;
+}
+
+.csc-nl-single__body {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #2d3748;
+}
+
+.csc-nl-single__body p {
+    margin: 0 0 16px;
+}
+
+.csc-nl-single__body h2,
+.csc-nl-single__body h3 {
+    color: var(--csc-blue);
+    margin: 28px 0 10px;
+}
+
+.csc-nl-single__body a {
+    color: var(--csc-green);
+    text-decoration: underline;
+}
+
+.csc-nl-single__body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+
+@media (max-width: 640px) {
+    .csc-nl-single {
+        padding: 24px 20px;
+    }
+
+    .csc-nl-single__title {
+        font-size: 20px;
+    }
+}
+
+/* ==========================================================================
    NOT FOUND CARD
    ========================================================================== */
 .csc-not-found-wrap {
@@ -2994,6 +3103,7 @@ a.csc-dir-th-link:hover {
     min-height: calc(100vh - 120px);
     padding: 40px 24px;
 }
+
 .csc-not-found-card {
     background: #ffffff;
     border: 1px solid #e8edf2;
@@ -3004,6 +3114,7 @@ a.csc-dir-th-link:hover {
     width: 100%;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
+
 .csc-not-found-icon {
     display: flex;
     align-items: center;
@@ -3015,22 +3126,26 @@ a.csc-dir-th-link:hover {
     margin: 0 auto 24px;
     color: #a0aec0;
 }
+
 .csc-not-found-icon svg {
     width: 44px;
     height: 44px;
 }
+
 .csc-not-found-title {
     font-size: 20px;
     font-weight: 700;
     color: #192d55;
     margin: 0 0 10px;
 }
+
 .csc-not-found-message {
     font-size: 14px;
     color: #637083;
     line-height: 1.6;
     margin: 0 0 28px;
 }
+
 .csc-not-found-btn {
     display: inline-flex;
     align-items: center;
@@ -3042,10 +3157,12 @@ a.csc-dir-th-link:hover {
     border-radius: 8px;
     text-decoration: none;
 }
+
 .csc-not-found-btn svg {
     width: 16px;
     height: 16px;
 }
+
 @media (max-width: 640px) {
     .csc-not-found-card {
         padding: 40px 24px;
@@ -3718,4 +3835,79 @@ a.csc-dir-th-link:hover {
     .csc-settings-toggle-row {
         gap: 16px;
     }
+}
+
+/* ==========================================================================
+   Two-Factor Authentication
+   ========================================================================== */
+
+.csc-2fa-code-input {
+    font-size: 1.6rem;
+    letter-spacing: .3em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    padding: 14px 18px;
+}
+
+.csc-2fa-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+    font-size: .85rem;
+    color: var(--csc-muted);
+}
+
+.csc-2fa-footer-sep {
+    color: var(--csc-border);
+}
+
+/* ==========================================================================
+   Registration — consent checkboxes
+   ========================================================================== */
+
+.csc-consent-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0 24px;
+    padding: 16px 18px;
+    background: #f8fafc;
+    border: 1px solid var(--csc-border);
+    border-radius: 8px;
+}
+
+.csc-consent-label {
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--csc-text);
+}
+
+.csc-consent-label input[type="checkbox"] {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* ==========================================================================
+   Set Password — expired/invalid link error card icon
+   ========================================================================== */
+
+.csc-setpw-error-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.csc-setpw-error-icon svg {
+    width: 36px;
+    height: 36px;
 }

@@ -251,7 +251,7 @@ class Csc_Settings {
 				<div class="csc-settings-toggle-row">
 					<div class="csc-settings-toggle-info">
 						<div class="csc-settings-toggle-title">Forum notifications</div>
-						<div class="csc-settings-toggle-desc">Email me when someone replies to a thread I'm joined.</div>
+						<div class="csc-settings-toggle-desc">Email me when someone replies to a topic I created.</div>
 					</div>
 					<label class="csc-toggle" aria-label="Forum notifications">
 						<input type="checkbox" name="notif_forum" value="1" <?php checked( $forum ); ?>>

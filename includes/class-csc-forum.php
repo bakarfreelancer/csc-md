@@ -674,7 +674,49 @@ class Csc_Forum {
 			wp_send_json_error( 'Failed to post reply.' );
 		}
 
+		// Notify topic author if they opted in and aren't the replier
+		$this->maybe_notify_topic_author( $topic, $user, $body );
+
 		wp_send_json_success( array( 'comment_id' => $comment_id ) );
+	}
+
+	/* -----------------------------------------------------------------------
+	 * Send forum reply notification to topic creator
+	 * --------------------------------------------------------------------- */
+	private function maybe_notify_topic_author( $topic, $replier, $reply_body ) {
+		// Don't notify if the replier is the topic author
+		if ( (int) $topic->post_author === $replier->ID ) {
+			return;
+		}
+
+		$author = get_userdata( $topic->post_author );
+		if ( ! $author ) {
+			return;
+		}
+
+		$pref = get_user_meta( $author->ID, '_csc_notif_forum', true );
+		// Default ON — only skip if explicitly set to '0'
+		if ( $pref === '0' ) {
+			return;
+		}
+
+		$site      = get_bloginfo( 'name' );
+		$fname     = get_user_meta( $author->ID, 'first_name', true ) ?: $author->display_name;
+		$topic_url = add_query_arg( 'forum_topic', $topic->ID, Csc_Dashboard::portal_url( 'member-forum' ) );
+		$unsub_url = add_query_arg( 'tab', 'notifications', Csc_Dashboard::portal_url( 'member-settings' ) );
+		$excerpt   = wp_trim_words( $reply_body, 30, '…' );
+
+		$subject = "[{$site}] {$replier->display_name} replied to your topic";
+
+		$body  = "Hi {$fname},\n\n";
+		$body .= "{$replier->display_name} replied to your topic \"{$topic->post_title}\":\n\n";
+		$body .= "\"{$excerpt}\"\n\n";
+		$body .= "View the discussion:\n{$topic_url}\n\n";
+		$body .= "— The {$site} Team\n\n";
+		$body .= "---\n";
+		$body .= "To turn off these notifications: {$unsub_url}";
+
+		wp_mail( $author->user_email, $subject, $body );
 	}
 
 	/* -----------------------------------------------------------------------

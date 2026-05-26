@@ -217,12 +217,12 @@ class Csc_Member_Admin {
 		// Send approval email with password-reset link
 		$user = get_user_by( 'ID', $user_id );
 		if ( $user ) {
-			$key       = get_password_reset_key( $user );
-			$reset_url = add_query_arg( array(
-				'action' => 'rp',
-				'key'    => $key,
-				'login'  => rawurlencode( $user->user_login ),
-			), network_site_url( 'wp-login.php', 'login' ) );
+			$key        = get_password_reset_key( $user );
+			$setpw_page = get_page_by_path( 'members-set-password' );
+			$reset_url  = add_query_arg( array(
+				'key'   => $key,
+				'login' => rawurlencode( $user->user_login ),
+			), $setpw_page ? get_permalink( $setpw_page->ID ) : home_url( '/members-set-password/' ) );
 
 			$login_page = get_page_by_path( 'members-login' );
 			$login_url  = $login_page ? get_permalink( $login_page->ID ) : wp_login_url();

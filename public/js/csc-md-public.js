@@ -47,15 +47,222 @@
             },
             success: function (res) {
                 if (res.success) {
-                    window.location.href = res.data.redirect;
+                    if (res.data.require_2fa) {
+                        // Show 2FA panel
+                        $('#csc-2fa-token').val(res.data.token);
+                        $('#csc-2fa-nonce').val(res.data.nonce);
+                        $loginForm.hide();
+                        $('#csc-2fa-panel').show();
+                        $('#csc-2fa-code').focus();
+                    } else {
+                        window.location.href = res.data.redirect;
+                    }
                 } else {
                     showAlert($msg, res.data.message, 'error');
-                    $btn.prop('disabled', false).text('Login');
                 }
+                $btn.prop('disabled', false).text('Login');
             },
             error: function () {
                 showAlert($msg, 'A network error occurred. Please try again.', 'error');
                 $btn.prop('disabled', false).text('Login');
+            },
+        });
+    });
+
+    /* -----------------------------------------------------------------------
+     * TWO-FACTOR AUTHENTICATION
+     * --------------------------------------------------------------------- */
+
+    // Verify 2FA code
+    $('#csc-2fa-form').on('submit', function (e) {
+        e.preventDefault();
+
+        var $btn = $(this).find('.csc-btn-primary');
+        var $msg = $('#csc-2fa-message');
+
+        clearAlert($msg);
+        $btn.prop('disabled', true).text('Verifying\u2026');
+
+        $.ajax({
+            url:  cscAjax.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'csc_verify_2fa',
+                nonce:  $('#csc-2fa-nonce').val(),
+                token:  $('#csc-2fa-token').val(),
+                code:   $('#csc-2fa-code').val().trim(),
+            },
+            success: function (res) {
+                if (res.success) {
+                    window.location.href = res.data.redirect;
+                } else {
+                    showAlert($msg, res.data.message, 'error');
+                    $btn.prop('disabled', false).text('Verify & Sign In');
+                }
+            },
+            error: function () {
+                showAlert($msg, 'A network error occurred. Please try again.', 'error');
+                $btn.prop('disabled', false).text('Verify & Sign In');
+            },
+        });
+    });
+
+    // Allow only digits in code input
+    $('#csc-2fa-code').on('input', function () {
+        $(this).val($(this).val().replace(/\D/g, ''));
+    });
+
+    // Resend code
+    $('#csc-2fa-resend').on('click', function () {
+        var $btn = $(this);
+        var $msg = $('#csc-2fa-message');
+
+        $btn.prop('disabled', true).text('Sending\u2026');
+        clearAlert($msg);
+
+        $.ajax({
+            url:  cscAjax.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'csc_resend_2fa',
+                nonce:  $('#csc-2fa-nonce').val(),
+                token:  $('#csc-2fa-token').val(),
+            },
+            success: function (res) {
+                if (res.success) {
+                    showAlert($msg, res.data.message, 'success');
+                } else {
+                    showAlert($msg, res.data.message, 'error');
+                }
+            },
+            error: function () {
+                showAlert($msg, 'Network error. Please try again.', 'error');
+            },
+            complete: function () {
+                $btn.prop('disabled', false).text('Resend code');
+            },
+        });
+    });
+
+    // Back to login
+    $('#csc-2fa-back').on('click', function () {
+        $('#csc-2fa-panel').hide();
+        $('#csc-2fa-code').val('');
+        clearAlert($('#csc-2fa-message'));
+        $loginForm.show();
+    });
+
+    /* -----------------------------------------------------------------------
+     * FORGOT PASSWORD FORM
+     * --------------------------------------------------------------------- */
+    $('#csc-forgot-form').on('submit', function (e) {
+        e.preventDefault();
+
+        var $form = $(this);
+        var $btn  = $form.find('.csc-btn-primary');
+        var $msg  = $('#csc-forgot-message');
+
+        clearAlert($msg);
+        $btn.prop('disabled', true).text('Sending\u2026');
+
+        $.ajax({
+            url:  cscAjax.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'csc_forgot_password',
+                nonce:  $form.data('nonce'),
+                email:  $form.find('[name="email"]').val().trim(),
+            },
+            success: function (res) {
+                if (res.success) {
+                    showAlert($msg, res.data.message, 'success');
+                    $form.find('[name="email"]').val('');
+                } else {
+                    showAlert($msg, res.data.message, 'error');
+                }
+            },
+            error: function () {
+                showAlert($msg, 'A network error occurred. Please try again.', 'error');
+            },
+            complete: function () {
+                $btn.prop('disabled', false).text('Send Reset Link');
+            },
+        });
+    });
+
+    /* -----------------------------------------------------------------------
+     * SET PASSWORD FORM
+     * --------------------------------------------------------------------- */
+
+    // Password strength meter for set-password page
+    $('#csc-setpw-new').on('input', function () {
+        var pw   = $(this).val();
+        var $bar = $('#csc-setpw-strength .csc-pw-strength-bar');
+        var $lbl = $('#csc-setpw-strength-label');
+
+        if (!pw) {
+            $bar.removeClass('strength-1 strength-2 strength-3 strength-4');
+            $lbl.text('');
+            return;
+        }
+
+        var score = 0;
+        if (pw.length >= 8)           score++;
+        if (/[A-Z]/.test(pw))         score++;
+        if (/[0-9]/.test(pw))         score++;
+        if (/[^A-Za-z0-9]/.test(pw))  score++;
+
+        var labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+        $bar.removeClass('strength-1 strength-2 strength-3 strength-4')
+            .addClass('strength-' + score);
+        $lbl.text(labels[score] || '');
+    });
+
+    $('#csc-setpw-form').on('submit', function (e) {
+        e.preventDefault();
+
+        var $form    = $(this);
+        var $btn     = $form.find('.csc-btn-primary');
+        var $msg     = $('#csc-setpw-message');
+        var password = $form.find('[name="new_password"]').val();
+        var confirm  = $form.find('[name="confirm_password"]').val();
+
+        clearAlert($msg);
+
+        if (password !== confirm) {
+            showAlert($msg, 'Passwords do not match.', 'error');
+            return;
+        }
+
+        if (password.length < 8) {
+            showAlert($msg, 'Password must be at least 8 characters.', 'error');
+            return;
+        }
+
+        $btn.prop('disabled', true).text('Saving\u2026');
+
+        $.ajax({
+            url:  cscAjax.ajaxUrl,
+            type: 'POST',
+            data: {
+                action:           'csc_set_password',
+                nonce:            $form.data('nonce'),
+                key:              $form.data('key'),
+                login:            $form.data('login'),
+                new_password:     password,
+                confirm_password: confirm,
+            },
+            success: function (res) {
+                if (res.success) {
+                    window.location.href = res.data.redirect;
+                } else {
+                    showAlert($msg, res.data.message, 'error');
+                    $btn.prop('disabled', false).text('Set Password');
+                }
+            },
+            error: function () {
+                showAlert($msg, 'A network error occurred. Please try again.', 'error');
+                $btn.prop('disabled', false).text('Set Password');
             },
         });
     });
@@ -133,6 +340,42 @@
     });
 
     /* -----------------------------------------------------------------------
+     * REGISTRATION — Country / County typeaheads for new org form
+     * --------------------------------------------------------------------- */
+    if ($('#reg-country-input').length && typeof window.cscCountries !== 'undefined') {
+
+        function setRegCountyVisibility(isUK) {
+            if (isUK) {
+                $('#reg-county-group').show();
+            } else {
+                $('#reg-county-group').hide();
+                $('#reg-county-input').val('');
+                $('#reg-county-hidden').val('');
+            }
+        }
+
+        makeLocalTypeahead({
+            inputId:    '#reg-country-input',
+            hiddenId:   '#reg-country-hidden',
+            dropdownId: '#reg-country-dropdown',
+            getData:    function () { return window.cscCountries; },
+            renderItem: function (item) { return { label: item, sub: null }; },
+            onSelect:   function (value) { setRegCountyVisibility(value === 'United Kingdom'); },
+            onClear:    function () { setRegCountyVisibility(false); },
+        });
+
+        makeLocalTypeahead({
+            inputId:    '#reg-county-input',
+            hiddenId:   '#reg-county-hidden',
+            dropdownId: '#reg-county-dropdown',
+            getData:    function () { return window.cscUkCounties || []; },
+            renderItem: function (item) { return { label: item.name, sub: item.region }; },
+            onSelect:   null,
+            onClear:    null,
+        });
+    }
+
+    /* -----------------------------------------------------------------------
      * "CAN'T FIND? REGISTER A NEW ONE" TOGGLE
      * --------------------------------------------------------------------- */
     $('#csc-register-org-check').on('change', function () {
@@ -199,6 +442,12 @@
             return;
         }
 
+        if (!$form.find('[name="consent_sharing"]').is(':checked') ||
+            !$form.find('[name="consent_directory"]').is(':checked')) {
+            showAlert($msg, 'Please accept the required consent statements to proceed.', 'error');
+            return;
+        }
+
         $btn.prop('disabled', true).text('Submitting\u2026');
 
         var data = {
@@ -232,6 +481,13 @@
         var $msg  = $('#csc-step2-message');
 
         clearAlert($msg);
+
+        if (!$form.find('[name="consent_sharing"]').is(':checked') ||
+            !$form.find('[name="consent_directory"]').is(':checked')) {
+            showAlert($msg, 'Please accept the required consent statements to proceed.', 'error');
+            return;
+        }
+
         $btn.prop('disabled', true).text('Submitting\u2026');
 
         var data = {

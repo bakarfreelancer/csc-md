@@ -13,16 +13,25 @@ class Csc_Registration {
 
 	public function register_hooks( $loader ) {
 		$loader->add_action( 'init', $this, 'register_shortcodes' );
-		$loader->add_action( 'wp_ajax_nopriv_csc_login', $this, 'handle_login' );
-		$loader->add_action( 'wp_ajax_nopriv_csc_register', $this, 'handle_register' );
+		$loader->add_action( 'wp_ajax_nopriv_csc_login',            $this, 'handle_login' );
+		$loader->add_action( 'wp_ajax_nopriv_csc_verify_2fa',       $this, 'handle_verify_2fa' );
+		$loader->add_action( 'wp_ajax_nopriv_csc_resend_2fa',       $this, 'handle_resend_2fa' );
+		$loader->add_action( 'wp_ajax_nopriv_csc_register',         $this, 'handle_register' );
+		$loader->add_action( 'wp_ajax_nopriv_csc_forgot_password',  $this, 'handle_forgot_password' );
+		$loader->add_action( 'wp_ajax_nopriv_csc_set_password',     $this, 'handle_set_password' );
+		// Redirect wp-login.php password flows to our custom pages
+		$loader->add_filter( 'lostpassword_url',   $this, 'custom_lostpassword_url', 10, 2 );
+		$loader->add_action( 'login_init',         $this, 'redirect_default_password_pages' );
 		// Block wp default login redirect for CSC members
 		$loader->add_filter( 'login_url', $this, 'custom_login_url', 10, 3 );
 		$loader->add_action( 'template_redirect', $this, 'redirect_logged_in_from_login' );
 	}
 
 	public function register_shortcodes() {
-		add_shortcode( 'csc_login', array( $this, 'render_login' ) );
-		add_shortcode( 'csc_join', array( $this, 'render_join' ) );
+		add_shortcode( 'csc_login',           array( $this, 'render_login' ) );
+		add_shortcode( 'csc_join',            array( $this, 'render_join' ) );
+		add_shortcode( 'csc_forgot_password', array( $this, 'render_forgot_password' ) );
+		add_shortcode( 'csc_set_password',    array( $this, 'render_set_password' ) );
 	}
 
 	/* -----------------------------------------------------------------------
@@ -50,6 +59,179 @@ class Csc_Registration {
 			wp_safe_redirect( $this->get_dashboard_url() );
 			exit;
 		}
+	}
+
+	/* -----------------------------------------------------------------------
+	 * Filter: lostpassword_url → our custom forgot-password page
+	 * --------------------------------------------------------------------- */
+	public function custom_lostpassword_url( $url, $redirect ) {
+		$page = get_page_by_path( 'members-forgot-password' );
+		return $page ? get_permalink( $page->ID ) : $url;
+	}
+
+	/* -----------------------------------------------------------------------
+	 * Redirect wp-login.php?action=lostpassword|rp to our custom pages
+	 * --------------------------------------------------------------------- */
+	public function redirect_default_password_pages() {
+		$action = sanitize_key( $_GET['action'] ?? '' );
+
+		if ( $action === 'lostpassword' ) {
+			$page = get_page_by_path( 'members-forgot-password' );
+			if ( $page ) {
+				wp_safe_redirect( get_permalink( $page->ID ) );
+				exit;
+			}
+		} elseif ( $action === 'rp' || $action === 'resetpass' ) {
+			$key   = sanitize_text_field( $_GET['key']   ?? '' );
+			$login = sanitize_text_field( $_GET['login'] ?? '' );
+			$page  = get_page_by_path( 'members-set-password' );
+			if ( $page && $key && $login ) {
+				wp_safe_redirect( add_query_arg(
+					array( 'key' => $key, 'login' => rawurlencode( $login ) ),
+					get_permalink( $page->ID )
+				) );
+				exit;
+			}
+		}
+	}
+
+	/* -----------------------------------------------------------------------
+	 * [csc_forgot_password] shortcode
+	 * --------------------------------------------------------------------- */
+	public function render_forgot_password( $atts ) {
+		if ( is_user_logged_in() ) {
+			wp_safe_redirect( $this->get_dashboard_url() );
+			exit;
+		}
+
+		$logo_url  = plugin_dir_url( dirname( __FILE__ ) ) . 'public/images/csc-logo.png';
+		$login_url = Csc_Dashboard::login_url();
+		$nonce     = wp_create_nonce( 'csc_forgot_password' );
+
+		ob_start();
+		?>
+<div class="csc-portal-wrap">
+    <div class="csc-card csc-login-card">
+        <img src="<?php echo esc_url( $logo_url ); ?>" alt="Celtic Sea Cluster" class="csc-logo">
+        <h1 class="csc-title">Reset Password</h1>
+        <p class="csc-subtitle">Enter your email address and we'll send you a link to reset your password.</p>
+
+        <div id="csc-forgot-message" class="csc-alert" style="display:none;" role="alert"></div>
+
+        <form id="csc-forgot-form" class="csc-form" novalidate
+              data-nonce="<?php echo esc_attr( $nonce ); ?>">
+            <div class="csc-form-group">
+                <label for="csc-forgot-email">Email Address</label>
+                <input type="email" id="csc-forgot-email" name="email"
+                       placeholder="you@company.com" required autocomplete="email">
+            </div>
+            <button type="submit" class="csc-btn-primary">Send Reset Link</button>
+        </form>
+
+        <p class="csc-join-prompt">
+            <a href="<?php echo esc_url( $login_url ); ?>" class="csc-link">&larr; Back to Login</a>
+        </p>
+    </div>
+</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	/* -----------------------------------------------------------------------
+	 * [csc_set_password] shortcode
+	 * --------------------------------------------------------------------- */
+	public function render_set_password( $atts ) {
+		if ( is_user_logged_in() ) {
+			wp_safe_redirect( $this->get_dashboard_url() );
+			exit;
+		}
+
+		$key   = sanitize_text_field( $_GET['key']   ?? '' );
+		$login = sanitize_text_field( $_GET['login'] ?? '' );
+
+		$logo_url   = plugin_dir_url( dirname( __FILE__ ) ) . 'public/images/csc-logo.png';
+		$login_url  = Csc_Dashboard::login_url();
+		$forgot_page = get_page_by_path( 'members-forgot-password' );
+		$forgot_url  = $forgot_page ? get_permalink( $forgot_page->ID ) : $login_url;
+
+		// Validate key upfront so we show an error immediately if it's expired/invalid
+		$valid_user = false;
+		if ( $key && $login ) {
+			$check = check_password_reset_key( $key, $login );
+			if ( ! is_wp_error( $check ) ) {
+				$valid_user = true;
+			}
+		}
+
+		if ( ! $valid_user ) {
+			ob_start();
+			?>
+<div class="csc-portal-wrap">
+    <div class="csc-card csc-login-card">
+        <img src="<?php echo esc_url( $logo_url ); ?>" alt="Celtic Sea Cluster" class="csc-logo">
+        <div class="csc-setpw-error-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="28"/><line x1="22" y1="22" x2="42" y2="42"/><line x1="42" y1="22" x2="22" y2="42"/></svg>
+        </div>
+        <h1 class="csc-title">Link Expired</h1>
+        <p class="csc-subtitle">This password reset link is invalid or has already been used. Please request a new one.</p>
+        <a href="<?php echo esc_url( $forgot_url ); ?>" class="csc-btn-primary" style="display:block;text-align:center;">Request New Link</a>
+        <p class="csc-join-prompt"><a href="<?php echo esc_url( $login_url ); ?>" class="csc-link">&larr; Back to Login</a></p>
+    </div>
+</div>
+			<?php
+			return ob_get_clean();
+		}
+
+		$nonce    = wp_create_nonce( 'csc_set_password' );
+		$eye_icon = '<svg class="csc-pw-eye" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 10s3.6-7 9-7 9 7 9 7-3.6 7-9 7-9-7-9-7z"/><circle cx="10" cy="10" r="3"/></svg>';
+
+		ob_start();
+		?>
+<div class="csc-portal-wrap">
+    <div class="csc-card csc-login-card">
+        <img src="<?php echo esc_url( $logo_url ); ?>" alt="Celtic Sea Cluster" class="csc-logo">
+        <h1 class="csc-title">Set Your Password</h1>
+        <p class="csc-subtitle">Choose a strong password for your account.</p>
+
+        <div id="csc-setpw-message" class="csc-alert" style="display:none;" role="alert"></div>
+
+        <form id="csc-setpw-form" class="csc-form" novalidate
+              data-nonce="<?php echo esc_attr( $nonce ); ?>"
+              data-key="<?php echo esc_attr( $key ); ?>"
+              data-login="<?php echo esc_attr( $login ); ?>">
+
+            <div class="csc-form-group">
+                <label for="csc-setpw-new">New Password</label>
+                <div class="csc-password-wrap">
+                    <input type="password" id="csc-setpw-new" name="new_password"
+                           class="csc-input" autocomplete="new-password">
+                    <button type="button" class="csc-pw-toggle" data-target="csc-setpw-new" aria-label="Show/hide password">
+                        <?php echo $eye_icon; ?>
+                    </button>
+                </div>
+                <div class="csc-pw-strength" id="csc-setpw-strength" aria-live="polite">
+                    <div class="csc-pw-strength-bar"><span></span><span></span><span></span><span></span></div>
+                    <span class="csc-pw-strength-label" id="csc-setpw-strength-label"></span>
+                </div>
+            </div>
+
+            <div class="csc-form-group">
+                <label for="csc-setpw-confirm">Confirm Password</label>
+                <div class="csc-password-wrap">
+                    <input type="password" id="csc-setpw-confirm" name="confirm_password"
+                           class="csc-input" autocomplete="new-password">
+                    <button type="button" class="csc-pw-toggle" data-target="csc-setpw-confirm" aria-label="Show/hide password">
+                        <?php echo $eye_icon; ?>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="csc-btn-primary">Set Password &amp; Sign In</button>
+        </form>
+    </div>
+</div>
+		<?php
+		return ob_get_clean();
 	}
 
 	/* -----------------------------------------------------------------------
@@ -106,6 +288,33 @@ class Csc_Registration {
 
         <p class="csc-join-prompt">Not a member yet? <a href="<?php echo esc_url( $join_url ); ?>"
                 class="csc-link">Apply to Join</a></p>
+
+        <!-- 2FA verification panel (shown by JS when required) -->
+        <div id="csc-2fa-panel" style="display:none;" aria-live="polite">
+            <p class="csc-subtitle" style="margin-bottom:20px;">We've sent a 6-digit verification code to your email address. Enter it below to complete sign in.</p>
+
+            <div id="csc-2fa-message" class="csc-alert" style="display:none;" role="alert"></div>
+
+            <form id="csc-2fa-form" novalidate>
+                <input type="hidden" id="csc-2fa-token" name="token" value="">
+                <input type="hidden" id="csc-2fa-nonce" name="nonce" value="">
+
+                <div class="csc-form-group">
+                    <label for="csc-2fa-code">Verification Code</label>
+                    <input type="text" id="csc-2fa-code" name="code" placeholder="000000"
+                        maxlength="6" autocomplete="one-time-code" inputmode="numeric"
+                        class="csc-input csc-2fa-code-input">
+                </div>
+
+                <button type="submit" class="csc-btn-primary">Verify &amp; Sign In</button>
+            </form>
+
+            <div class="csc-2fa-footer">
+                <button type="button" class="csc-link-btn" id="csc-2fa-resend">Resend code</button>
+                <span class="csc-2fa-footer-sep">·</span>
+                <button type="button" class="csc-link-btn" id="csc-2fa-back">Back to login</button>
+            </div>
+        </div>
     </div>
 </div>
 <?php
@@ -173,8 +382,28 @@ class Csc_Registration {
                         <input type="text" id="csc-org-name" name="org_name" placeholder="e.g Acme Energy Ltd">
                     </div>
                     <div class="csc-form-group">
-                        <label for="csc-org-location">Location</label>
-                        <input type="text" id="csc-org-location" name="org_location" placeholder="e.g Swansea, Wales">
+                        <label for="csc-org-city">City / Town</label>
+                        <input type="text" id="csc-org-city" name="org_city" placeholder="e.g. Swansea">
+                    </div>
+                    <div class="csc-form-group">
+                        <label for="reg-country-input">Country</label>
+                        <div class="csc-typeahead-wrap">
+                            <input type="text" id="reg-country-input" class="csc-typeahead-input"
+                                   placeholder="Select country" autocomplete="off"
+                                   aria-autocomplete="list" aria-controls="reg-country-dropdown">
+                            <input type="hidden" id="reg-country-hidden" name="org_country">
+                            <ul id="reg-country-dropdown" class="csc-typeahead-dropdown" role="listbox" style="display:none;"></ul>
+                        </div>
+                    </div>
+                    <div class="csc-form-group" id="reg-county-group" style="display:none;">
+                        <label for="reg-county-input">County</label>
+                        <div class="csc-typeahead-wrap">
+                            <input type="text" id="reg-county-input" class="csc-typeahead-input"
+                                   placeholder="Select county" autocomplete="off"
+                                   aria-autocomplete="list" aria-controls="reg-county-dropdown">
+                            <input type="hidden" id="reg-county-hidden" name="org_county">
+                            <ul id="reg-county-dropdown" class="csc-typeahead-dropdown" role="listbox" style="display:none;"></ul>
+                        </div>
                     </div>
                     <div class="csc-form-group">
                         <label for="csc-org-postcode">Postcode</label>
@@ -219,6 +448,22 @@ class Csc_Registration {
                         <input type="email" id="csc-email-1" name="email" placeholder="you@company.com" required
                             autocomplete="email">
                     </div>
+
+                    <div class="csc-consent-group">
+                        <label class="csc-checkbox-label csc-consent-label">
+                            <input type="checkbox" name="consent_marketing" id="consent-marketing-1">
+                            Yes, I would like to receive marketing communications and details of forthcoming events from the Celtic Sea Cluster.
+                        </label>
+                        <label class="csc-checkbox-label csc-consent-label">
+                            <input type="checkbox" name="consent_sharing" id="consent-sharing-1">
+                            Yes, I consent to my contact details being shared with the Celtic Sea Cluster Board Members (Celtic Sea Power, Offshore Renewable Energy (ORE) Catapult, Pembrokeshire Coastal Forum, and Welsh Government), so they can contact me with relevant information such as funding programmes and events.
+                        </label>
+                        <label class="csc-checkbox-label csc-consent-label">
+                            <input type="checkbox" name="consent_directory" id="consent-directory-1">
+                            Yes, I consent to my organisation's details being included in the Celtic Sea Cluster Member Directory, visible to other members. I understand that any content I choose to post within the members' forum will also be visible to other members.
+                        </label>
+                    </div>
+
                     <button type="submit" class="csc-btn-primary">Submit Application</button>
                 </div>
 
@@ -256,6 +501,22 @@ class Csc_Registration {
                     <input type="email" id="csc-email-2" name="email_2" placeholder="you@company.com" required
                         autocomplete="email">
                 </div>
+
+                <div class="csc-consent-group">
+                    <label class="csc-checkbox-label csc-consent-label">
+                        <input type="checkbox" name="consent_marketing" id="consent-marketing-2">
+                        Yes, I would like to receive marketing communications and details of forthcoming events from the Celtic Sea Cluster.
+                    </label>
+                    <label class="csc-checkbox-label csc-consent-label">
+                        <input type="checkbox" name="consent_sharing" id="consent-sharing-2">
+                        Yes, I consent to my contact details being shared with the Celtic Sea Cluster Board Members (Celtic Sea Power, Offshore Renewable Energy (ORE) Catapult, Pembrokeshire Coastal Forum, and Welsh Government), so they can contact me with relevant information such as funding programmes and events.
+                    </label>
+                    <label class="csc-checkbox-label csc-consent-label">
+                        <input type="checkbox" name="consent_directory" id="consent-directory-2">
+                        Yes, I consent to my organisation's details being included in the Celtic Sea Cluster Member Directory, visible to other members. I understand that any content I choose to post within the members' forum will also be visible to other members.
+                    </label>
+                </div>
+
                 <button type="submit" class="csc-btn-primary">Submit Application</button>
             </form>
         </div><!-- /step-2 -->
@@ -283,6 +544,10 @@ class Csc_Registration {
             patience.</p>
     </div>
 </div>
+<script>
+window.cscCountries  = <?php echo wp_json_encode( csc_get_countries() ); ?>;
+window.cscUkCounties = <?php echo wp_json_encode( csc_get_uk_counties_flat() ); ?>;
+</script>
 <?php
 		return ob_get_clean();
 	}
@@ -306,26 +571,114 @@ class Csc_Registration {
 			wp_send_json_error( array( 'message' => 'Invalid email address or password.' ) );
 		}
 
-		$result = wp_signon( array(
-			'user_login'    => $user->user_login,
-			'user_password' => $password,
-			'remember'      => $remember,
-		), false );
-
-		if ( is_wp_error( $result ) ) {
+		// Verify credentials WITHOUT creating a session (no cookies, no redirects)
+		$auth = wp_authenticate( $user->user_login, $password );
+		if ( is_wp_error( $auth ) ) {
 			wp_send_json_error( array( 'message' => 'Invalid email address or password.' ) );
 		}
 
 		// Check CSC membership status
-		$status = get_user_meta( $result->ID, '_csc_status', true );
+		$status = get_user_meta( $auth->ID, '_csc_status', true );
 		if ( $status === 'pending' ) {
-			wp_logout();
 			wp_send_json_error( array(
 				'message' => 'Your account is currently pending approval. You will be notified once access is granted.',
 			) );
 		}
 
+		// Two-factor authentication: send code, do NOT create session yet
+		if ( get_user_meta( $auth->ID, '_csc_2fa_enabled', true ) === '1' ) {
+			$code  = (string) random_int( 100000, 999999 );
+			$token = wp_generate_password( 32, false );
+			set_transient( 'csc_2fa_' . $token, array(
+				'user_id'  => $auth->ID,
+				'code'     => $code,
+				'remember' => $remember,
+			), 600 ); // 10 minutes
+
+			$this->send_2fa_email( $auth, $code );
+
+			wp_send_json_success( array(
+				'require_2fa' => true,
+				'token'       => $token,
+				'nonce'       => wp_create_nonce( 'csc_verify_2fa' ),
+			) );
+		}
+
+		// No 2FA — create session now and redirect
+		wp_set_auth_cookie( $auth->ID, $remember );
+		wp_set_current_user( $auth->ID );
+		do_action( 'wp_login', $auth->user_login, $auth );
+
+		$this->maybe_send_login_alert( $auth );
+
 		wp_send_json_success( array( 'redirect' => $this->get_dashboard_url() ) );
+	}
+
+	/* -----------------------------------------------------------------------
+	 * AJAX: Verify 2FA code
+	 * --------------------------------------------------------------------- */
+	public function handle_verify_2fa() {
+		check_ajax_referer( 'csc_verify_2fa', 'nonce' );
+
+		$token = sanitize_text_field( $_POST['token'] ?? '' );
+		$code  = preg_replace( '/\D/', '', $_POST['code'] ?? '' );
+
+		if ( ! $token || ! $code ) {
+			wp_send_json_error( array( 'message' => 'Please enter the verification code.' ) );
+		}
+
+		$data = get_transient( 'csc_2fa_' . $token );
+		if ( ! $data ) {
+			wp_send_json_error( array( 'message' => 'Code has expired. Please go back and log in again.' ) );
+		}
+
+		if ( ! hash_equals( $data['code'], $code ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid code. Please try again.' ) );
+		}
+
+		delete_transient( 'csc_2fa_' . $token );
+
+		$user = get_user_by( 'ID', $data['user_id'] );
+		if ( ! $user ) {
+			wp_send_json_error( array( 'message' => 'Something went wrong. Please log in again.' ) );
+		}
+
+		wp_set_auth_cookie( $user->ID, $data['remember'] );
+
+		$this->maybe_send_login_alert( $user );
+
+		wp_send_json_success( array( 'redirect' => $this->get_dashboard_url() ) );
+	}
+
+	/* -----------------------------------------------------------------------
+	 * AJAX: Resend 2FA code
+	 * --------------------------------------------------------------------- */
+	public function handle_resend_2fa() {
+		check_ajax_referer( 'csc_verify_2fa', 'nonce' );
+
+		$token = sanitize_text_field( $_POST['token'] ?? '' );
+		if ( ! $token ) {
+			wp_send_json_error( array( 'message' => 'Invalid request.' ) );
+		}
+
+		$data = get_transient( 'csc_2fa_' . $token );
+		if ( ! $data ) {
+			wp_send_json_error( array( 'message' => 'Session expired. Please log in again.' ) );
+		}
+
+		$user = get_user_by( 'ID', $data['user_id'] );
+		if ( ! $user ) {
+			wp_send_json_error( array( 'message' => 'Something went wrong. Please log in again.' ) );
+		}
+
+		// Generate a new code and reset the TTL
+		$new_code = (string) random_int( 100000, 999999 );
+		$data['code'] = $new_code;
+		set_transient( 'csc_2fa_' . $token, $data, 600 );
+
+		$this->send_2fa_email( $user, $new_code );
+
+		wp_send_json_success( array( 'message' => 'A new code has been sent to your email.' ) );
 	}
 
 	/* -----------------------------------------------------------------------
@@ -341,6 +694,11 @@ class Csc_Registration {
 		$org_id          = intval( $_POST['organisation_id'] ?? 0 );
 		$register_new    = ! empty( $_POST['register_new_org'] );
 
+		// Consent fields
+		$consent_marketing  = ! empty( $_POST['consent_marketing'] );
+		$consent_sharing    = ! empty( $_POST['consent_sharing'] );
+		$consent_directory  = ! empty( $_POST['consent_directory'] );
+
 		// Validate required fields
 		if ( ! $first_name || ! $last_name || ! $job_title || ! $email ) {
 			wp_send_json_error( array( 'message' => 'Please fill in all required fields.' ) );
@@ -351,11 +709,16 @@ class Csc_Registration {
 		if ( email_exists( $email ) ) {
 			wp_send_json_error( array( 'message' => 'An account with this email address already exists. Please log in.' ) );
 		}
+		if ( ! $consent_sharing || ! $consent_directory ) {
+			wp_send_json_error( array( 'message' => 'Please accept the required consent statements to proceed.' ) );
+		}
 
 		// Handle new organisation registration
 		if ( $register_new ) {
 			$org_name     = sanitize_text_field( $_POST['org_name']     ?? '' );
-			$org_location = sanitize_text_field( $_POST['org_location'] ?? '' );
+			$org_city     = sanitize_text_field( $_POST['org_city']     ?? '' );
+			$org_country  = sanitize_text_field( $_POST['org_country']  ?? '' );
+			$org_county   = sanitize_text_field( $_POST['org_county']   ?? '' );
 			$org_sector   = sanitize_text_field( $_POST['org_sector']   ?? '' );
 			$org_postcode = sanitize_text_field( $_POST['org_postcode'] ?? '' );
 
@@ -373,11 +736,11 @@ class Csc_Registration {
 				wp_send_json_error( array( 'message' => 'Could not register your organisation. Please try again.' ) );
 			}
 
-			update_post_meta( $org_id, '_csc_org_location', $org_location );
-			update_post_meta( $org_id, '_csc_org_sector',   $org_sector );
-			if ( $org_postcode ) {
-				update_post_meta( $org_id, '_csc_org_postcode', $org_postcode );
-			}
+			update_post_meta( $org_id, '_csc_org_sector',  $org_sector );
+			if ( $org_city )     update_post_meta( $org_id, '_csc_org_city',     $org_city );
+			if ( $org_country )  update_post_meta( $org_id, '_csc_org_country',  $org_country );
+			if ( $org_county )   update_post_meta( $org_id, '_csc_org_county',   $org_county );
+			if ( $org_postcode ) update_post_meta( $org_id, '_csc_org_postcode', $org_postcode );
 
 		} elseif ( ! $org_id ) {
 			wp_send_json_error( array( 'message' => 'Please select an organisation or register a new one.' ) );
@@ -401,9 +764,14 @@ class Csc_Registration {
 			'role'         => 'subscriber',
 		) );
 
-		update_user_meta( $user_id, '_csc_status', 'pending' );
-		update_user_meta( $user_id, '_csc_job_title', $job_title );
+		update_user_meta( $user_id, '_csc_status',          'pending' );
+		update_user_meta( $user_id, '_csc_job_title',       $job_title );
 		update_user_meta( $user_id, '_csc_organisation_id', $org_id );
+
+		// Consent preferences
+		update_user_meta( $user_id, '_csc_consent_marketing',  $consent_marketing  ? '1' : '0' );
+		update_user_meta( $user_id, '_csc_consent_sharing',    $consent_sharing    ? '1' : '0' );
+		update_user_meta( $user_id, '_csc_consent_directory',  $consent_directory  ? '1' : '0' );
 
 		// Notify site admin
 		$this->notify_admin_new_application( $user_id, $org_id );
@@ -444,6 +812,128 @@ class Csc_Registration {
 	private function get_dashboard_url() {
 		$page = get_page_by_path( 'member-dashboard' );
 		return $page ? get_permalink( $page->ID ) : home_url( '/member-dashboard/' );
+	}
+
+	/* -----------------------------------------------------------------------
+	 * AJAX: send password reset email
+	 * --------------------------------------------------------------------- */
+	public function handle_forgot_password() {
+		check_ajax_referer( 'csc_forgot_password', 'nonce' );
+
+		$email = sanitize_email( $_POST['email'] ?? '' );
+		if ( ! is_email( $email ) ) {
+			wp_send_json_error( array( 'message' => 'Please enter a valid email address.' ) );
+		}
+
+		// Generic response to prevent email enumeration
+		$generic = array( 'message' => 'If an account exists for that email address, you will receive a reset link shortly.' );
+
+		$user = get_user_by( 'email', $email );
+		if ( ! $user ) {
+			wp_send_json_success( $generic );
+		}
+
+		$key = get_password_reset_key( $user );
+		if ( is_wp_error( $key ) ) {
+			wp_send_json_error( array( 'message' => 'Unable to generate a reset link. Please try again.' ) );
+		}
+
+		$reset_page = get_page_by_path( 'members-set-password' );
+		$reset_url  = add_query_arg(
+			array( 'key' => $key, 'login' => rawurlencode( $user->user_login ) ),
+			$reset_page ? get_permalink( $reset_page->ID ) : home_url( '/members-set-password/' )
+		);
+
+		$site  = get_bloginfo( 'name' );
+		$fname = get_user_meta( $user->ID, 'first_name', true ) ?: $user->display_name;
+
+		$subject = "[{$site}] Reset your password";
+		$body    = "Hi {$fname},\n\n";
+		$body   .= "We received a request to reset the password for your {$site} account.\n\n";
+		$body   .= "Click the link below to choose a new password:\n";
+		$body   .= $reset_url . "\n\n";
+		$body   .= "This link expires in 24 hours. If you didn't request this, you can safely ignore this email — your password won't change.\n\n";
+		$body   .= "— The {$site} Team";
+
+		wp_mail( $user->user_email, $subject, $body );
+
+		wp_send_json_success( $generic );
+	}
+
+	/* -----------------------------------------------------------------------
+	 * AJAX: set new password via reset key
+	 * --------------------------------------------------------------------- */
+	public function handle_set_password() {
+		check_ajax_referer( 'csc_set_password', 'nonce' );
+
+		$key     = sanitize_text_field( $_POST['key']             ?? '' );
+		$login   = sanitize_text_field( $_POST['login']           ?? '' );
+		$new_pw  =                      $_POST['new_password']     ?? '';
+		$confirm =                      $_POST['confirm_password'] ?? '';
+
+		if ( ! $new_pw || ! $confirm ) {
+			wp_send_json_error( array( 'message' => 'Please fill in both password fields.' ) );
+		}
+		if ( strlen( $new_pw ) < 8 ) {
+			wp_send_json_error( array( 'message' => 'Password must be at least 8 characters.' ) );
+		}
+		if ( $new_pw !== $confirm ) {
+			wp_send_json_error( array( 'message' => 'Passwords do not match.' ) );
+		}
+
+		$user = check_password_reset_key( $key, $login );
+		if ( is_wp_error( $user ) ) {
+			wp_send_json_error( array( 'message' => 'This link has expired or is invalid. Please request a new one.' ) );
+		}
+
+		reset_password( $user, $new_pw );
+		wp_set_auth_cookie( $user->ID, false );
+
+		wp_send_json_success( array(
+			'message'  => 'Password set successfully! Redirecting…',
+			'redirect' => $this->get_dashboard_url(),
+		) );
+	}
+
+	private function send_2fa_email( $user, $code ) {
+		$site  = get_bloginfo( 'name' );
+		$fname = get_user_meta( $user->ID, 'first_name', true ) ?: $user->display_name;
+
+		$subject = "[{$site}] Your verification code";
+		$body    = "Hi {$fname},\n\n";
+		$body   .= "Your two-factor authentication code is:\n\n";
+		$body   .= "    {$code}\n\n";
+		$body   .= "This code expires in 10 minutes. Do not share it with anyone.\n\n";
+		$body   .= "If you did not attempt to sign in, please change your password immediately.\n\n";
+		$body   .= "— The {$site} Team";
+
+		wp_mail( $user->user_email, $subject, $body );
+	}
+
+	private function maybe_send_login_alert( $user ) {
+		$pref = get_user_meta( $user->ID, '_csc_login_alerts', true );
+		// Default is ON; only skip if explicitly set to '0'
+		if ( $pref === '0' ) {
+			return;
+		}
+
+		$site  = get_bloginfo( 'name' );
+		$fname = get_user_meta( $user->ID, 'first_name', true ) ?: $user->display_name;
+		$time  = wp_date( 'j M Y, H:i T' );
+		$ip    = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? 'Unknown' );
+		$ua    = sanitize_text_field( $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown' );
+
+		$subject = "[{$site}] New sign-in to your account";
+		$body    = "Hi {$fname},\n\n";
+		$body   .= "A new sign-in to your {$site} account was detected.\n\n";
+		$body   .= "Time:       {$time}\n";
+		$body   .= "IP address: {$ip}\n";
+		$body   .= "Browser:    {$ua}\n\n";
+		$body   .= "If this was you, no action is needed.\n";
+		$body   .= "If you did not sign in, please change your password immediately.\n\n";
+		$body   .= "— The {$site} Team";
+
+		wp_mail( $user->user_email, $subject, $body );
 	}
 
 	private function notify_admin_new_application( $user_id, $org_id ) {
