@@ -808,6 +808,7 @@ select.csc-input {
     justify-content: center;
     flex-shrink: 0;
     letter-spacing: 0.03em;
+    overflow: hidden;
 }
 
 /* Mobile avatar in top bar */
@@ -2282,6 +2283,34 @@ a.csc-dir-th-link:hover {
 .csc-member-profile-contact:hover {
     color: var(--csc-blue);
     text-decoration: underline !important;
+}
+
+/* LinkedIn contact uses filled SVG — keep it same size */
+.csc-member-profile-contact svg[viewBox="0 0 20 20"][fill="currentColor"] {
+    color: #0a66c2;
+}
+
+/* "optional" label hint in forms */
+.csc-label-optional {
+    font-weight: 400;
+    color: var(--csc-muted);
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+.csc-member-profile-bio {
+    width: 100%;
+    padding-top: 20px;
+    border-top: 1px solid var(--csc-border);
+    margin-bottom: 24px;
+}
+
+.csc-member-profile-bio-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--csc-text);
+    margin: 0;
+    white-space: pre-line;
 }
 
 .csc-member-profile-expertise {
@@ -3861,6 +3890,78 @@ a.csc-dir-th-link:hover {
 
 .csc-2fa-footer-sep {
     color: var(--csc-border);
+}
+
+/* ==========================================================================
+   Multi-select chip widget (.csc-ms-wrap)
+   ========================================================================== */
+
+.csc-ms-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.csc-ms-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 0;
+}
+
+.csc-ms-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px 3px 10px;
+    background: var(--csc-blue);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.csc-ms-pill-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: none;
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.csc-ms-pill-remove:hover {
+    background: rgba(255,255,255,0.45);
+}
+
+/* Company filter row in reps tab */
+.csc-dir-co-filter-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.csc-dir-co-filter-row .csc-dir-filter-label {
+    padding-top: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.csc-dir-co-filter-row .csc-ms-wrap {
+    flex: 1;
+    min-width: 0;
 }
 
 /* ==========================================================================

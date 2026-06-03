@@ -13,6 +13,9 @@ class Csc_Member_Admin {
 		$loader->add_action( 'wp_ajax_csc_reject_member', $this, 'reject_member' );
 		$loader->add_filter( 'manage_users_columns', $this, 'add_status_column' );
 		$loader->add_filter( 'manage_users_custom_column', $this, 'render_status_column', 10, 3 );
+		// Company edit permission on user profile screen
+		$loader->add_action( 'edit_user_profile',        $this, 'render_company_permission_field' );
+		$loader->add_action( 'edit_user_profile_update', $this, 'save_company_permission_field' );
 	}
 
 	/* -----------------------------------------------------------------------
@@ -227,14 +230,17 @@ class Csc_Member_Admin {
 			$login_page = get_page_by_path( 'members-login' );
 			$login_url  = $login_page ? get_permalink( $login_page->ID ) : wp_login_url();
 
-			$subject  = 'Your CSC Membership Has Been Approved';
+			$subject  = 'Your Celtic Sea Cluster Membership Has Been Approved';
 			$body     = 'Dear ' . $user->first_name . ",\n\n";
-			$body    .= "Great news — your application to join the Celtic Sea Cluster has been approved!\n\n";
-			$body    .= "Please click the link below to set your password and access the Members Portal:\n";
+			$body    .= "We are pleased to confirm that your application to join the Celtic Sea Cluster has been approved.\n\n";
+			$body    .= "You can now set your password and access the Members Portal using the link below:\n";
 			$body    .= $reset_url . "\n\n";
-			$body    .= "Once you have set your password, you can log in at:\n";
+			$body    .= "Once your password has been created, you will be able to log in here:\n";
 			$body    .= $login_url . "\n\n";
-			$body    .= "Welcome to the Celtic Sea Cluster!\n";
+			$body    .= "Within the portal, you can create and manage your member profile, access the Member Directory, connect with other members through the forum, and view the latest newsletters and resources.\n\n";
+			$body    .= "Welcome to the Celtic Sea Cluster. We are delighted to have you as part of the network.\n\n";
+			$body    .= "Kind regards,\n\n";
+			$body    .= "The Celtic Sea Cluster Team\n";
 
 			wp_mail( $user->user_email, $subject, $body );
 		}
@@ -283,5 +289,54 @@ class Csc_Member_Admin {
 		);
 		$color = $colors[ $status ] ?? '#666';
 		return '<span style="color:' . $color . ';font-weight:600;">' . esc_html( ucfirst( $status ) ) . '</span>';
+	}
+
+	/* -----------------------------------------------------------------------
+	 * Company edit permission — shown on WP Admin > Users > Edit User
+	 * --------------------------------------------------------------------- */
+	public function render_company_permission_field( $profile_user ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$org_id   = get_user_meta( $profile_user->ID, '_csc_organisation_id', true );
+		$org_name = $org_id ? get_the_title( $org_id ) : '';
+		$enabled  = get_user_meta( $profile_user->ID, '_csc_can_edit_company', true ) === '1';
+		?>
+		<h2>CSC Member Portal</h2>
+		<table class="form-table" role="presentation">
+			<tr>
+				<th scope="row">Company Edit Access</th>
+				<td>
+					<?php if ( $org_id ) : ?>
+						<label>
+							<input type="checkbox" name="csc_can_edit_company" value="1"
+							       <?php checked( $enabled ); ?>>
+							Allow this member to edit <strong><?php echo esc_html( $org_name ?: "Organisation #{$org_id}" ); ?></strong> company details
+						</label>
+						<p class="description">
+							When enabled, the <em>Company Information</em> tab appears on the member's Update Account page.
+						</p>
+						<?php wp_nonce_field( 'csc_company_permission_' . $profile_user->ID, '_csc_company_perm_nonce' ); ?>
+					<?php else : ?>
+						<p class="description">This user is not linked to a CSC organisation.</p>
+					<?php endif; ?>
+				</td>
+			</tr>
+		</table>
+		<?php
+	}
+
+	public function save_company_permission_field( $user_id ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		if ( ! isset( $_POST['_csc_company_perm_nonce'] ) ||
+		     ! wp_verify_nonce( $_POST['_csc_company_perm_nonce'], 'csc_company_permission_' . $user_id ) ) {
+			return;
+		}
+
+		$value = ! empty( $_POST['csc_can_edit_company'] ) ? '1' : '0';
+		update_user_meta( $user_id, '_csc_can_edit_company', $value );
 	}
 }

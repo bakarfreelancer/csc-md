@@ -15,6 +15,8 @@ class Csc_Directory {
 	public function add_query_vars( $vars ) {
 		$vars[] = 'dir_page';
 		$vars[] = 'reps_page';
+		$vars[] = 'dir_search';
+		$vars[] = 'reps_search';
 		return $vars;
 	}
 
@@ -61,7 +63,7 @@ class Csc_Directory {
 	}
 
 	/* -----------------------------------------------------------------------
-	 * Listing view — routes to Companies or Representatives tab
+	 * Listing view — routes to Companies or Member Contacts tab
 	 * --------------------------------------------------------------------- */
 	private function render_listing( $user ) {
 		$tab = sanitize_key( $_GET['tab'] ?? '' );
@@ -72,21 +74,28 @@ class Csc_Directory {
 	}
 
 	/* -----------------------------------------------------------------------
-	 * All Companies tab
+	 * All Organisations tab
 	 * --------------------------------------------------------------------- */
 	private function render_companies_listing( $user ) {
-		$search       = sanitize_text_field( $_GET['s']            ?? '' );
-		$country      = sanitize_text_field( $_GET['country']      ?? '' );
-		$county       = sanitize_text_field( $_GET['county']       ?? '' );
-		$postcode     = sanitize_text_field( $_GET['postcode']     ?? '' );
-		$industry     = sanitize_text_field( $_GET['industry']     ?? '' );
-		$capability   = sanitize_text_field( $_GET['capability']   ?? '' );
-		$igp          = sanitize_text_field( $_GET['igp']          ?? '' );
-		$company_type = sanitize_text_field( $_GET['company_type'] ?? '' );
-		$expertise_f  = sanitize_text_field( $_GET['expertise']    ?? '' );
-		$paged        = max( 1, absint( $_GET['dir_page'] ?? 1 ) );
-		$per_page     = 40;
-		$has_filters  = $country || $county || $postcode || $industry || $capability || $igp || $company_type || $expertise_f;
+		$search       = sanitize_text_field( $_GET['dir_search']   ?? '' );
+		$country_raw    = sanitize_text_field( $_GET['country']      ?? '' );
+		$county_raw     = sanitize_text_field( $_GET['county']       ?? '' );
+		$postcode_raw   = sanitize_text_field( $_GET['postcode']     ?? '' );
+		$industry_raw   = sanitize_text_field( $_GET['industry']     ?? '' );
+		$igp_raw        = sanitize_text_field( $_GET['igp']          ?? '' );
+		$co_type_raw    = sanitize_text_field( $_GET['company_type'] ?? '' );
+		$expertise_f    = sanitize_text_field( $_GET['expertise']    ?? '' );
+		$paged          = max( 1, absint( $_GET['dir_page'] ?? 1 ) );
+		$per_page       = 40;
+
+		$countries_sel  = array_values( array_filter( array_map( 'trim', explode( ',', $country_raw ) ) ) );
+		$counties_sel   = array_values( array_filter( array_map( 'trim', explode( ',', $county_raw ) ) ) );
+		$postcodes_sel  = array_values( array_filter( array_map( 'trim', explode( ',', $postcode_raw ) ) ) );
+		$industries_sel = array_values( array_filter( array_map( 'trim', explode( ',', $industry_raw ) ) ) );
+		$igps_sel       = array_values( array_filter( array_map( 'trim', explode( ',', $igp_raw ) ) ) );
+		$co_types_sel   = array_values( array_filter( array_map( 'trim', explode( ',', $co_type_raw ) ) ) );
+
+		$has_filters  = ! empty( $countries_sel ) || ! empty( $counties_sel ) || ! empty( $postcodes_sel ) || ! empty( $industries_sel ) || ! empty( $igps_sel ) || ! empty( $co_types_sel ) || $expertise_f;
 
 		// Build WP_Query
 		$args = array(
@@ -132,26 +141,23 @@ class Csc_Directory {
 
 		$meta_query = array( 'relation' => 'AND' );
 
-		if ( $country ) {
-			$meta_query[] = array( 'key' => '_csc_org_country', 'value' => $country, 'compare' => 'LIKE' );
+		if ( ! empty( $countries_sel ) ) {
+			$meta_query[] = array( 'key' => '_csc_org_country', 'value' => $countries_sel, 'compare' => 'IN' );
 		}
-		if ( $county ) {
-			$meta_query[] = array( 'key' => '_csc_org_county', 'value' => $county, 'compare' => 'LIKE' );
+		if ( ! empty( $counties_sel ) ) {
+			$meta_query[] = array( 'key' => '_csc_org_county', 'value' => $counties_sel, 'compare' => 'IN' );
 		}
-		if ( $postcode ) {
-			$meta_query[] = array( 'key' => '_csc_org_postcode', 'value' => $postcode, 'compare' => 'LIKE' );
+		if ( ! empty( $postcodes_sel ) ) {
+			$meta_query[] = array( 'key' => '_csc_org_postcode', 'value' => $postcodes_sel, 'compare' => 'IN' );
 		}
-		if ( $industry ) {
-			$meta_query[] = array( 'key' => '_csc_org_industry', 'value' => $industry, 'compare' => '=' );
+		if ( ! empty( $industries_sel ) ) {
+			$meta_query[] = array( 'key' => '_csc_org_industry', 'value' => $industries_sel, 'compare' => 'IN' );
 		}
-		if ( $capability ) {
-			$meta_query[] = array( 'key' => '_csc_org_capability', 'value' => $capability, 'compare' => 'LIKE' );
+		if ( ! empty( $igps_sel ) ) {
+			$meta_query[] = array( 'key' => '_csc_org_igp_category', 'value' => $igps_sel, 'compare' => 'IN' );
 		}
-		if ( $igp ) {
-			$meta_query[] = array( 'key' => '_csc_org_igp_category', 'value' => $igp, 'compare' => '=' );
-		}
-		if ( $company_type ) {
-			$meta_query[] = array( 'key' => '_csc_org_sector', 'value' => $company_type, 'compare' => '=' );
+		if ( ! empty( $co_types_sel ) ) {
+			$meta_query[] = array( 'key' => '_csc_org_sector', 'value' => $co_types_sel, 'compare' => 'IN' );
 		}
 
 		if ( count( $meta_query ) > 1 ) {
@@ -248,15 +254,15 @@ class Csc_Directory {
 
         <!-- Tabs -->
         <div class="csc-dir-tabs-row">
-            <a href="<?php echo esc_url( $dir_url ); ?>" class="csc-dir-tab is-active">All Companies</a>
+            <a href="<?php echo esc_url( $dir_url ); ?>" class="csc-dir-tab is-active">All Organisations</a>
             <a href="<?php echo esc_url( add_query_arg( 'tab', 'reps', $dir_url ) ); ?>"
-                class="csc-dir-tab">Representatives</a>
+                class="csc-dir-tab">Member Contacts</a>
         </div>
 
         <!-- Search & Filter -->
         <div class="csc-dir-section">
             <h2 class="csc-dir-section-title">Search &amp; Filter</h2>
-            <p class="csc-dir-section-sub">Find organisations by name, location, sector, or expertise</p>
+            <p class="csc-dir-section-sub">Find organisations by name, location, sector, capability, or area of expertise</p>
 
             <form method="GET" action="<?php echo esc_url( $dir_url ); ?>" class="csc-dir-form" id="csc-dir-form">
                 <div class="csc-dir-search-row">
@@ -266,12 +272,12 @@ class Csc_Directory {
                             <circle cx="8.5" cy="8.5" r="5.5" />
                             <line x1="13" y1="13" x2="18" y2="18" />
                         </svg>
-                        <input type="search" name="s" class="csc-dir-search-input" autocomplete="off"
+                        <input type="search" name="dir_search" class="csc-dir-search-input" autocomplete="off"
                             placeholder="Search by organisation, expertise, or keyword…"
                             value="<?php echo esc_attr( $search ); ?>">
                     </div>
-                    <button type="button" class="csc-dir-filter-btn <?php echo $has_filters ? 'is-active' : ''; ?>"
-                        id="csc-filter-toggle" aria-expanded="<?php echo $has_filters ? 'true' : 'false'; ?>"
+                    <button type="button" class="csc-dir-filter-btn is-active"
+                        id="csc-filter-toggle" aria-expanded="true"
                         aria-controls="csc-filter-panel">
                         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" aria-hidden="true">
@@ -279,7 +285,7 @@ class Csc_Directory {
                             <line x1="5" y1="10" x2="15" y2="10" />
                             <line x1="7" y1="15" x2="13" y2="15" />
                         </svg>
-                        All Filters
+                        <span class="csc-filter-btn-label">Close Filters</span>
                     </button>
                 </div>
 
@@ -291,92 +297,107 @@ class Csc_Directory {
                     industries: <?php echo wp_json_encode( $industries ); ?>,
                     igpCats: <?php echo wp_json_encode( $igp_cats ); ?>,
                     companyTypes: <?php echo wp_json_encode( $company_types ); ?>,
-                    postcodes: <?php echo wp_json_encode( array_values( $postcodes ) ); ?>
+                    postcodes: <?php echo wp_json_encode( array_values( $postcodes ) ); ?>,
+                    selCountries: <?php echo wp_json_encode( $countries_sel ); ?>,
+                    selCounties:  <?php echo wp_json_encode( $counties_sel ); ?>,
+                    selPostcodes: <?php echo wp_json_encode( $postcodes_sel ); ?>,
+                    selIndustries: <?php echo wp_json_encode( $industries_sel ); ?>,
+                    selIgp: <?php echo wp_json_encode( $igps_sel ); ?>,
+                    selCoTypes: <?php echo wp_json_encode( $co_types_sel ); ?>
                 };
                 </script>
 
                 <!-- Filter panel -->
-                <div class="csc-dir-filter-panel" id="csc-filter-panel" <?php echo $has_filters ? '' : 'hidden'; ?>>
+                <div class="csc-dir-filter-panel" id="csc-filter-panel">
                     <div class="csc-dir-filter-grid">
 
                         <div class="csc-dir-filter-field">
                             <label class="csc-dir-filter-label">Country</label>
-                            <div class="csc-typeahead-wrap csc-dir-ta-wrap">
-                                <input type="text" class="csc-dir-filter-input" id="df-country-vis" placeholder="All"
-                                    autocomplete="off" value="<?php echo esc_attr( $country ); ?>">
-                                <input type="hidden" name="country" id="df-country-val"
-                                    value="<?php echo esc_attr( $country ); ?>">
-                                <ul class="csc-typeahead-dropdown" id="df-country-drop" role="listbox"
-                                    style="display:none;"></ul>
+                            <div class="csc-ms-wrap">
+                                <div class="csc-typeahead-wrap csc-dir-ta-wrap">
+                                    <input type="text" class="csc-dir-filter-input" id="df-country-vis"
+                                        placeholder="Select…" autocomplete="off">
+                                    <input type="hidden" name="country" id="df-country-val"
+                                        value="<?php echo esc_attr( $country_raw ); ?>">
+                                    <ul class="csc-typeahead-dropdown" id="df-country-drop" role="listbox"
+                                        style="display:none;"></ul>
+                                </div>
+                                <div class="csc-ms-pills" id="df-country-pills"></div>
                             </div>
                         </div>
 
                         <div class="csc-dir-filter-field">
                             <label class="csc-dir-filter-label">County</label>
-                            <div class="csc-typeahead-wrap csc-dir-ta-wrap">
-                                <input type="text" class="csc-dir-filter-input" id="df-county-vis" placeholder="All"
-                                    autocomplete="off" value="<?php echo esc_attr( $county ); ?>">
-                                <input type="hidden" name="county" id="df-county-val"
-                                    value="<?php echo esc_attr( $county ); ?>">
-                                <ul class="csc-typeahead-dropdown" id="df-county-drop" role="listbox"
-                                    style="display:none;"></ul>
+                            <div class="csc-ms-wrap">
+                                <div class="csc-typeahead-wrap csc-dir-ta-wrap">
+                                    <input type="text" class="csc-dir-filter-input" id="df-county-vis"
+                                        placeholder="Select…" autocomplete="off">
+                                    <input type="hidden" name="county" id="df-county-val"
+                                        value="<?php echo esc_attr( $county_raw ); ?>">
+                                    <ul class="csc-typeahead-dropdown" id="df-county-drop" role="listbox"
+                                        style="display:none;"></ul>
+                                </div>
+                                <div class="csc-ms-pills" id="df-county-pills"></div>
                             </div>
                         </div>
 
                         <div class="csc-dir-filter-field">
                             <label class="csc-dir-filter-label">Postcode</label>
-                            <div class="csc-typeahead-wrap csc-dir-ta-wrap">
-                                <input type="text" class="csc-dir-filter-input" id="df-postcode-vis"
-                                    placeholder="e.g. SA1" autocomplete="off"
-                                    value="<?php echo esc_attr( $postcode ); ?>">
-                                <input type="hidden" name="postcode" id="df-postcode-val"
-                                    value="<?php echo esc_attr( $postcode ); ?>">
-                                <ul class="csc-typeahead-dropdown" id="df-postcode-drop" role="listbox"
-                                    style="display:none;"></ul>
+                            <div class="csc-ms-wrap">
+                                <div class="csc-typeahead-wrap csc-dir-ta-wrap">
+                                    <input type="text" class="csc-dir-filter-input" id="df-postcode-vis"
+                                        placeholder="Select…" autocomplete="off">
+                                    <input type="hidden" name="postcode" id="df-postcode-val"
+                                        value="<?php echo esc_attr( $postcode_raw ); ?>">
+                                    <ul class="csc-typeahead-dropdown" id="df-postcode-drop" role="listbox"
+                                        style="display:none;"></ul>
+                                </div>
+                                <div class="csc-ms-pills" id="df-postcode-pills"></div>
                             </div>
                         </div>
 
                         <div class="csc-dir-filter-field">
                             <label class="csc-dir-filter-label">Primary Industry</label>
-                            <div class="csc-typeahead-wrap csc-dir-ta-wrap">
-                                <input type="text" class="csc-dir-filter-input" id="df-industry-vis" placeholder="All"
-                                    autocomplete="off" value="<?php echo esc_attr( $industry ); ?>">
-                                <input type="hidden" name="industry" id="df-industry-val"
-                                    value="<?php echo esc_attr( $industry ); ?>">
-                                <ul class="csc-typeahead-dropdown" id="df-industry-drop" role="listbox"
-                                    style="display:none;"></ul>
+                            <div class="csc-ms-wrap">
+                                <div class="csc-typeahead-wrap csc-dir-ta-wrap">
+                                    <input type="text" class="csc-dir-filter-input" id="df-industry-vis"
+                                        placeholder="Select…" autocomplete="off">
+                                    <input type="hidden" name="industry" id="df-industry-val"
+                                        value="<?php echo esc_attr( $industry_raw ); ?>">
+                                    <ul class="csc-typeahead-dropdown" id="df-industry-drop" role="listbox"
+                                        style="display:none;"></ul>
+                                </div>
+                                <div class="csc-ms-pills" id="df-industry-pills"></div>
                             </div>
                         </div>
 
                         <div class="csc-dir-filter-field">
-                            <label class="csc-dir-filter-label" for="df-capability">Organisational Capability</label>
-                            <input type="text" id="df-capability" name="capability" class="csc-dir-filter-input"
-                                autocomplete="off" placeholder="All" value="<?php echo esc_attr( $capability ); ?>">
-                        </div>
-
-                        <div class="csc-dir-filter-field">
-                            <label class="csc-dir-filter-label">
-                                <abbr title="Industrial Growth Plan Category"
-                                    style="text-decoration:underline dotted;cursor:help;">IGP Category</abbr>
-                            </label>
-                            <div class="csc-typeahead-wrap csc-dir-ta-wrap">
-                                <input type="text" class="csc-dir-filter-input" id="df-igp-vis" placeholder="All"
-                                    autocomplete="off" value="<?php echo esc_attr( $igp ); ?>">
-                                <input type="hidden" name="igp" id="df-igp-val" value="<?php echo esc_attr( $igp ); ?>">
-                                <ul class="csc-typeahead-dropdown" id="df-igp-drop" role="listbox"
-                                    style="display:none;"></ul>
+                            <label class="csc-dir-filter-label">Industrial Growth Plan Category</label>
+                            <div class="csc-ms-wrap">
+                                <div class="csc-typeahead-wrap csc-dir-ta-wrap">
+                                    <input type="text" class="csc-dir-filter-input" id="df-igp-vis"
+                                        placeholder="Select…" autocomplete="off">
+                                    <input type="hidden" name="igp" id="df-igp-val"
+                                        value="<?php echo esc_attr( $igp_raw ); ?>">
+                                    <ul class="csc-typeahead-dropdown" id="df-igp-drop" role="listbox"
+                                        style="display:none;"></ul>
+                                </div>
+                                <div class="csc-ms-pills" id="df-igp-pills"></div>
                             </div>
                         </div>
 
                         <div class="csc-dir-filter-field">
                             <label class="csc-dir-filter-label">Company Type</label>
-                            <div class="csc-typeahead-wrap csc-dir-ta-wrap">
-                                <input type="text" class="csc-dir-filter-input" id="df-type-vis" placeholder="All"
-                                    autocomplete="off" value="<?php echo esc_attr( $company_type ); ?>">
-                                <input type="hidden" name="company_type" id="df-type-val"
-                                    value="<?php echo esc_attr( $company_type ); ?>">
-                                <ul class="csc-typeahead-dropdown" id="df-type-drop" role="listbox"
-                                    style="display:none;"></ul>
+                            <div class="csc-ms-wrap">
+                                <div class="csc-typeahead-wrap csc-dir-ta-wrap">
+                                    <input type="text" class="csc-dir-filter-input" id="df-type-vis"
+                                        placeholder="Select…" autocomplete="off">
+                                    <input type="hidden" name="company_type" id="df-type-val"
+                                        value="<?php echo esc_attr( $co_type_raw ); ?>">
+                                    <ul class="csc-typeahead-dropdown" id="df-type-drop" role="listbox"
+                                        style="display:none;"></ul>
+                                </div>
+                                <div class="csc-ms-pills" id="df-type-pills"></div>
                             </div>
                         </div>
 
@@ -602,16 +623,17 @@ class Csc_Directory {
             <div class="csc-co-banner__left">
                 <?php if ( $industry ) : ?>
                 <div class="csc-co-banner__row">
-                    <span class="csc-co-banner__label">Supply Chain Area:</span>
+                    <span class="csc-co-banner__label">Primary Industry:</span>
                     <span class="csc-co-banner-pill"><?php echo esc_html( $industry ); ?></span>
                 </div>
                 <?php endif; ?>
                 <?php if ( $igp ) : ?>
                 <div class="csc-co-banner__row">
-                    <span class="csc-co-banner__label">Offshore Wind Cluster:</span>
+                    <span class="csc-co-banner__label">IGP Category:</span>
                     <span class="csc-co-banner-pill"><?php echo esc_html( $igp ); ?></span>
                 </div>
-                <?php elseif ( $sector ) : ?>
+                <?php endif; ?>
+                <?php if ( $sector ) : ?>
                 <div class="csc-co-banner__row">
                     <span class="csc-co-banner__label">Company Type:</span>
                     <span class="csc-co-banner-pill"><?php echo esc_html( $sector ); ?></span>
@@ -687,7 +709,7 @@ class Csc_Directory {
             <?php endif; ?>
         </div>
 
-        <!-- Representatives -->
+        <!-- Member Contacts -->
         <?php if ( ! empty( $members ) ) : ?>
         <div class="csc-reps-grid">
             <?php foreach ( $members as $m ) :
@@ -761,12 +783,13 @@ class Csc_Directory {
 	}
 
 	/* -----------------------------------------------------------------------
-	 * Representatives tab
+	 * Member Contacts tab
 	 * --------------------------------------------------------------------- */
 	private function render_reps_listing( $user ) {
-		$search    = sanitize_text_field( $_GET['s']       ?? '' );
-		$filter_co = sanitize_text_field( $_GET['company_filter'] ?? '' );
-		$paged     = max( 1, absint( $_GET['reps_page'] ?? 1 ) );
+		$search        = sanitize_text_field( $_GET['reps_search']    ?? '' );
+		$filter_co_raw = sanitize_text_field( $_GET['company_filter'] ?? '' );
+		$filter_cos    = array_values( array_filter( array_map( 'trim', explode( ',', $filter_co_raw ) ) ) );
+		$paged         = max( 1, absint( $_GET['reps_page'] ?? 1 ) );
 		$per_page  = 40;
 
 		$dir_url  = Csc_Dashboard::portal_url( 'member-directory' );
@@ -787,30 +810,23 @@ class Csc_Directory {
 			$user_args['search_columns'] = array( 'display_name', 'user_email' );
 		}
 
-		if ( $filter_co ) {
-			// Try exact title first (typeahead selection), then fall back to search
-			$exact = get_posts( array(
-				'post_type'      => 'csc_organisation',
-				'post_status'    => 'publish',
-				'posts_per_page' => 1,
-				'title'          => $filter_co,
-				'fields'         => 'ids',
-			) );
-			if ( ! empty( $exact ) ) {
-				$orgs = $exact;
-			} else {
-				$orgs = get_posts( array(
+		if ( ! empty( $filter_cos ) ) {
+			$matched_org_ids = array();
+			foreach ( $filter_cos as $co_name ) {
+				$found = get_posts( array(
 					'post_type'      => 'csc_organisation',
 					'post_status'    => 'publish',
 					'posts_per_page' => -1,
-					's'              => $filter_co,
+					'title'          => $co_name,
 					'fields'         => 'ids',
 				) );
+				$matched_org_ids = array_merge( $matched_org_ids, $found );
 			}
-			if ( ! empty( $orgs ) ) {
+			$matched_org_ids = array_unique( $matched_org_ids );
+			if ( ! empty( $matched_org_ids ) ) {
 				$user_args['meta_query'][] = array(
 					'key'     => '_csc_organisation_id',
-					'value'   => $orgs,
+					'value'   => $matched_org_ids,
 					'compare' => 'IN',
 				);
 			} else {
@@ -849,14 +865,18 @@ class Csc_Directory {
 
         <!-- Tabs -->
         <div class="csc-dir-tabs-row">
-            <a href="<?php echo esc_url( $dir_url ); ?>" class="csc-dir-tab">All Companies</a>
-            <a href="<?php echo esc_url( $reps_url ); ?>" class="csc-dir-tab is-active">Representatives</a>
+            <a href="<?php echo esc_url( $dir_url ); ?>" class="csc-dir-tab">All Organisations</a>
+            <a href="<?php echo esc_url( $reps_url ); ?>" class="csc-dir-tab is-active">Member Contacts</a>
         </div>
 
         <!-- Search -->
         <div class="csc-dir-section">
             <h2 class="csc-dir-section-title">Search &amp; Filter</h2>
             <p class="csc-dir-section-sub">Find representatives by name, organisation, or expertise</p>
+            <script>
+            window.cscRepsOrgs = <?php echo wp_json_encode( array_map( 'get_the_title', $all_orgs ) ); ?>;
+            window.cscRepsOrgsSel = <?php echo wp_json_encode( $filter_cos ); ?>;
+            </script>
             <form method="GET" action="<?php echo esc_url( $reps_url ); ?>" class="csc-dir-form">
                 <input type="hidden" name="tab" value="reps">
                 <div class="csc-dir-search-row">
@@ -866,26 +886,12 @@ class Csc_Directory {
                             <circle cx="8.5" cy="8.5" r="5.5" />
                             <line x1="13" y1="13" x2="18" y2="18" />
                         </svg>
-                        <input type="search" name="s" class="csc-dir-search-input" autocomplete="off"
-                            placeholder="Search by organisation, name, or keyword…"
+                        <input type="search" name="reps_search" class="csc-dir-search-input" autocomplete="off"
+                            placeholder="Search by name or keyword…"
                             value="<?php echo esc_attr( $search ); ?>">
                     </div>
-                    <div class="csc-dir-search-wrap csc-dir-typeahead-wrap" style="max-width:260px;">
-                        <svg class="csc-dir-search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor"
-                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M3 6h14M3 10h10M3 14h6" />
-                        </svg>
-                        <input type="text" name="company_filter" id="csc-reps-company-filter"
-                            class="csc-dir-search-input" autocomplete="off" placeholder="Filter by company…"
-                            value="<?php echo esc_attr( $filter_co ); ?>" list="csc-reps-companies-list">
-                        <datalist id="csc-reps-companies-list">
-                            <?php foreach ( $all_orgs as $org_id ) : ?>
-                            <option value="<?php echo esc_attr( get_the_title( $org_id ) ); ?>">
-                                <?php endforeach; ?>
-                        </datalist>
-                    </div>
                     <button type="submit" class="csc-dir-apply-btn">Search</button>
-                    <?php if ( $search || $filter_co ) : ?>
+                    <?php if ( $search || ! empty( $filter_cos ) ) : ?>
                     <a href="<?php echo esc_url( $reps_url ); ?>" class="csc-dir-clear-btn">
                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" aria-hidden="true">
@@ -895,6 +901,22 @@ class Csc_Directory {
                         Clear
                     </a>
                     <?php endif; ?>
+                </div>
+
+                <!-- Company multi-select filter -->
+                <div class="csc-dir-co-filter-row">
+                    <label class="csc-dir-filter-label">Filter by Company</label>
+                    <div class="csc-ms-wrap">
+                        <div class="csc-typeahead-wrap csc-dir-ta-wrap" style="max-width:360px;">
+                            <input type="text" id="reps-co-vis" class="csc-dir-filter-input"
+                                   autocomplete="off" placeholder="Select companies…">
+                            <input type="hidden" name="company_filter" id="reps-co-val"
+                                   value="<?php echo esc_attr( $filter_co_raw ); ?>">
+                            <ul class="csc-typeahead-dropdown" id="reps-co-drop" role="listbox"
+                                style="display:none;"></ul>
+                        </div>
+                        <div class="csc-ms-pills" id="reps-co-pills"></div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -1010,6 +1032,8 @@ class Csc_Directory {
 		$full_name = trim( "$fname $lname" );
 		$job_title = get_user_meta( $member_id, '_csc_job_title',        true );
 		$phone     = get_user_meta( $member_id, '_csc_phone',            true );
+		$linkedin  = get_user_meta( $member_id, '_csc_linkedin',         true );
+		$bio       = get_user_meta( $member_id, '_csc_about',            true );
 		$expertise = get_user_meta( $member_id, '_csc_expertise',        true );
 		$photo_id  = get_user_meta( $member_id, '_csc_profile_photo_id', true );
 		$photo_url = $photo_id ? wp_get_attachment_image_url( $photo_id, 'medium' ) : '';
@@ -1039,7 +1063,7 @@ class Csc_Directory {
                     stroke-linejoin="round" aria-hidden="true">
                     <polyline points="13 4 7 10 13 16" />
                 </svg>
-                Representatives
+                Member Contacts
             </a>
         </nav>
 
@@ -1099,7 +1123,24 @@ class Csc_Directory {
                     <?php echo esc_html( $phone ); ?>
                 </a>
                 <?php endif; ?>
+                <?php if ( $linkedin ) : ?>
+                <a href="<?php echo esc_url( $linkedin ); ?>" class="csc-member-profile-contact"
+                   target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014V7.75h2.564v1.174h.037c.355-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.709zM4.49 6.575a1.548 1.548 0 1 1 0-3.096 1.548 1.548 0 0 1 0 3.096zm1.335 9.763H3.154V7.75H5.825v8.588zM17.668 0H2.328C1.043 0 0 1.02 0 2.276v15.448C0 18.981 1.043 20 2.328 20h15.34C18.959 20 20 18.981 20 17.724V2.276C20 1.02 18.959 0 17.668 0z"/>
+                    </svg>
+                    LinkedIn Profile
+                </a>
+                <?php endif; ?>
             </div>
+
+            <!-- Bio -->
+            <?php if ( $bio ) : ?>
+            <div class="csc-member-profile-bio">
+                <h2 class="csc-member-profile-section-title">About</h2>
+                <p class="csc-member-profile-bio-text"><?php echo nl2br( esc_html( $bio ) ); ?></p>
+            </div>
+            <?php endif; ?>
 
             <!-- Expertise -->
             <?php if ( ! empty( $exp_tags ) ) : ?>
@@ -1145,7 +1186,7 @@ class Csc_Directory {
 			$title   = 'Representative not found';
 			$message = 'This profile is either unavailable or has been set to private by the member.';
 			$back_url   = $reps_url;
-			$back_label = 'Back to Representatives';
+			$back_label = 'Back to Member Contacts';
 		} else {
 			$icon    = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="20" width="48" height="36" rx="4"/><path d="M20 20V16a12 12 0 0 1 24 0v4"/><line x1="40" y1="40" x2="52" y2="52"/><line x1="52" y1="40" x2="40" y2="52"/></svg>';
 			$title   = 'Organisation not found';

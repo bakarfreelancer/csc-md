@@ -34,7 +34,11 @@ class Csc_Profile {
 			exit;
 		}
 
-		$tab      = sanitize_key( $_GET['tab'] ?? 'personal' );
+		$can_edit_company = get_user_meta( $user->ID, '_csc_can_edit_company', true ) === '1';
+		$tab              = sanitize_key( $_GET['tab'] ?? 'personal' );
+		if ( $tab === 'company' && ! $can_edit_company ) {
+			$tab = 'personal';
+		}
 		$page_url = Csc_Dashboard::portal_url( 'update-account' );
 
 		ob_start();
@@ -57,13 +61,15 @@ class Csc_Profile {
 				<div class="csc-settings-tabs">
 					<a href="<?php echo esc_url( add_query_arg( 'tab', 'personal', $page_url ) ); ?>"
 					   class="csc-settings-tab <?php echo $tab === 'personal' ? 'is-active' : ''; ?>">Personal Details</a>
+					<?php if ( $can_edit_company ) : ?>
 					<a href="<?php echo esc_url( add_query_arg( 'tab', 'company', $page_url ) ); ?>"
 					   class="csc-settings-tab <?php echo $tab === 'company' ? 'is-active' : ''; ?>">Company Information</a>
+					<?php endif; ?>
 				</div>
 
 				<!-- Tab content -->
 				<div class="csc-settings-body">
-					<?php if ( $tab === 'company' ) : ?>
+					<?php if ( $tab === 'company' && $can_edit_company ) : ?>
 						<?php echo $this->render_company_tab( $user ); ?>
 					<?php else : ?>
 						<?php echo $this->render_personal_tab( $user ); ?>
@@ -478,6 +484,10 @@ class Csc_Profile {
 
 		if ( ! $org_id || $user_org !== $org_id ) {
 			wp_send_json_error( array( 'message' => 'Permission denied.' ) );
+		}
+
+		if ( get_user_meta( $user->ID, '_csc_can_edit_company', true ) !== '1' ) {
+			wp_send_json_error( array( 'message' => 'You do not have permission to edit company details.' ) );
 		}
 
 		if ( ! empty( $_POST['org_name'] ) ) {

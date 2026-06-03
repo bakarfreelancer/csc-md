@@ -74,25 +74,25 @@ class Csc_Dashboard {
 		$cards = array(
 			array(
 				'title' => 'Member Directory',
-				'desc'  => 'Access and browse members of the Celtic Sea Cluster, and discover organisations across the network.',
+				'desc'  => 'Browse Celtic Sea Cluster members and discover organisations across the network.',
 				'url'   => self::portal_url( 'member-directory' ),
 				'icon'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
 			),
 			array(
 				'title' => 'Forum',
-				'desc'  => 'Connect with other members, ask questions, and explore the latest discussions within the industry.',
+				'desc'  => 'Connect with other members, ask questions, and take part in industry discussions.',
 				'url'   => self::portal_url( 'member-forum' ),
 				'icon'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
 			),
 			array(
 				'title' => 'Newsletters &amp; Resources',
-				'desc'  => 'Stay informed with the latest updates, newsletters and resources. Your media resources are waiting for you.',
+				'desc'  => 'Access the latest updates, newsletters, and resources from the Celtic Sea Cluster.',
 				'url'   => self::portal_url( 'member-newsletters' ),
 				'icon'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
 			),
 			array(
 				'title' => 'Update Account',
-				'desc'  => 'Keep your profile current, update your contact details, and business information.',
+				'desc'  => 'Keep your profile up to date by updating your contact details and business information.',
 				'url'   => self::portal_url( 'update-account' ),
 				'icon'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
 			),
@@ -104,7 +104,7 @@ class Csc_Dashboard {
 			),
 			array(
 				'title' => 'Terms of Use',
-				'desc'  => 'Stay in the loop. Review the policies and guidelines that guide our community.',
+				'desc'  => 'Review the policies and guidelines that support and govern our community.',
 				'url'   => self::portal_url( 'terms-of-use' ),
 				'icon'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
 			),
@@ -119,7 +119,7 @@ class Csc_Dashboard {
 			<main class="csc-portal-main">
 				<div class="csc-dashboard-header">
 					<h1 class="csc-welcome-title">Welcome, <?php echo esc_html( $user->first_name ?: $user->display_name ); ?></h1>
-					<p class="csc-welcome-sub">Your hub for the Celtic Sea Cluster member network. Please choose a section below to get started.</p>
+					<p class="csc-welcome-sub">Your central hub for the Celtic Sea Cluster member network. Please select a section below to get started.</p>
 				</div>
 
 				<div class="csc-cards-grid">
@@ -162,6 +162,9 @@ class Csc_Dashboard {
 			$initials = strtoupper( substr( $user->display_name, 0, 2 ) );
 		}
 
+		$photo_id  = get_user_meta( $user->ID, '_csc_profile_photo_id', true );
+		$photo_url = $photo_id ? wp_get_attachment_image_url( (int) $photo_id, 'thumbnail' ) : '';
+
 		$nav = array(
 			'dashboard'   => array( 'label' => 'Dashboard',        'url' => self::portal_url( 'member-dashboard' ),  'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>' ),
 			'directory'   => array( 'label' => 'Member Directory', 'url' => self::portal_url( 'member-directory' ),  'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' ),
@@ -186,7 +189,13 @@ class Csc_Dashboard {
 				<span></span><span></span><span></span>
 			</button>
 			<span class="csc-mobile-section-label"><?php echo esc_html( $active_label ); ?></span>
-			<div class="csc-mobile-avatar" aria-hidden="true"><?php echo esc_html( $initials ); ?></div>
+			<div class="csc-mobile-avatar" aria-hidden="true">
+				<?php if ( $photo_url ) : ?>
+					<img src="<?php echo esc_url( $photo_url ); ?>" alt="" class="csc-avatar--photo" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+				<?php else : ?>
+					<?php echo esc_html( $initials ); ?>
+				<?php endif; ?>
+			</div>
 		</div>
 
 		<!-- Sidebar overlay (mobile only) -->
@@ -201,7 +210,11 @@ class Csc_Dashboard {
 
 			<!-- Profile -->
 			<div class="csc-sidebar__profile">
-				<div class="csc-avatar" aria-hidden="true"><?php echo esc_html( $initials ); ?></div>
+				<?php if ( $photo_url ) : ?>
+					<img src="<?php echo esc_url( $photo_url ); ?>" alt="" class="csc-avatar csc-avatar--photo" aria-hidden="true">
+				<?php else : ?>
+					<div class="csc-avatar" aria-hidden="true"><?php echo esc_html( $initials ); ?></div>
+				<?php endif; ?>
 				<div class="csc-sidebar__profile-info">
 					<div class="csc-sidebar__name"><?php echo esc_html( $user->display_name ); ?></div>
 					<?php if ( $org_name ) : ?>

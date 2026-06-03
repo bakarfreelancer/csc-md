@@ -260,9 +260,8 @@ class Csc_Registration {
 <div class="csc-portal-wrap">
     <div class="csc-card csc-login-card">
         <img src="<?php echo esc_url( $logo_url ); ?>" alt="Celtic Sea Cluster" class="csc-logo">
-        <h1 class="csc-title">CSC Members<br>Portal</h1>
-        <p class="csc-subtitle">Access your account to connect with members, explore opportunities, and stay updated on
-            sector insights.</p>
+        <h1 class="csc-title">Celtic Sea Cluster Members' Portal</h1>
+        <p class="csc-subtitle">Sign in to connect with other members, join discussions in the forum, explore opportunities, and stay informed with the latest sector updates.</p>
 
         <div id="csc-login-message" class="csc-alert" style="display:none;" role="alert"></div>
 
@@ -382,6 +381,10 @@ class Csc_Registration {
                         <input type="text" id="csc-org-name" name="org_name" placeholder="e.g Acme Energy Ltd">
                     </div>
                     <div class="csc-form-group">
+                        <label for="csc-org-address">Street Address <span class="csc-label-optional">(optional)</span></label>
+                        <input type="text" id="csc-org-address" name="org_address" placeholder="e.g. 1 Harbour Way">
+                    </div>
+                    <div class="csc-form-group">
                         <label for="csc-org-city">City / Town</label>
                         <input type="text" id="csc-org-city" name="org_city" placeholder="e.g. Swansea">
                     </div>
@@ -410,16 +413,47 @@ class Csc_Registration {
                         <input type="text" id="csc-org-postcode" name="org_postcode" placeholder="e.g. SA1 1AA">
                     </div>
                     <div class="csc-form-group">
-                        <label for="csc-org-sector">Sector / Services</label>
-                        <div class="csc-select-wrap">
-                            <select id="csc-org-sector" name="org_sector" class="csc-select">
-                                <option value="">Select Sector</option>
-                                <?php foreach ( Csc_Organisations::get_company_types() as $type ) : ?>
-                                <option value="<?php echo esc_attr( $type ); ?>"><?php echo esc_html( $type ); ?>
-                                </option>
-                                <?php endforeach; ?>
-                            </select>
+                        <label for="reg-sector-input">Company Type</label>
+                        <div class="csc-typeahead-wrap">
+                            <input type="text" id="reg-sector-input" class="csc-typeahead-input"
+                                   placeholder="Select company type" autocomplete="off"
+                                   aria-autocomplete="list" aria-controls="reg-sector-dropdown">
+                            <input type="hidden" id="reg-sector-hidden" name="org_sector">
+                            <ul id="reg-sector-dropdown" class="csc-typeahead-dropdown" role="listbox" style="display:none;"></ul>
                         </div>
+                    </div>
+                    <div class="csc-form-group">
+                        <label for="reg-industry-input">Primary Industry <span class="csc-label-optional">(optional)</span></label>
+                        <div class="csc-typeahead-wrap">
+                            <input type="text" id="reg-industry-input" class="csc-typeahead-input"
+                                   placeholder="Select primary industry" autocomplete="off"
+                                   aria-autocomplete="list" aria-controls="reg-industry-dropdown">
+                            <input type="hidden" id="reg-industry-hidden" name="org_industry">
+                            <ul id="reg-industry-dropdown" class="csc-typeahead-dropdown" role="listbox" style="display:none;"></ul>
+                        </div>
+                    </div>
+                    <div class="csc-form-group">
+                        <label for="reg-igp-input">Industrial Growth Plan Category <span class="csc-label-optional">(optional)</span></label>
+                        <div class="csc-typeahead-wrap">
+                            <input type="text" id="reg-igp-input" class="csc-typeahead-input"
+                                   placeholder="Select IGP category" autocomplete="off"
+                                   aria-autocomplete="list" aria-controls="reg-igp-dropdown">
+                            <input type="hidden" id="reg-igp-hidden" name="org_igp">
+                            <ul id="reg-igp-dropdown" class="csc-typeahead-dropdown" role="listbox" style="display:none;"></ul>
+                        </div>
+                    </div>
+                    <div class="csc-form-group">
+                        <label for="csc-org-phone">Phone <span class="csc-label-optional">(optional)</span></label>
+                        <input type="tel" id="csc-org-phone" name="org_phone" placeholder="e.g. +44 1792 000000">
+                    </div>
+                    <div class="csc-form-group">
+                        <label for="csc-org-website">Website <span class="csc-label-optional">(optional)</span></label>
+                        <input type="url" id="csc-org-website" name="org_website" placeholder="https://example.com">
+                    </div>
+                    <div class="csc-form-group">
+                        <label for="csc-org-description">Organisation Description <span class="csc-label-optional">(optional)</span></label>
+                        <textarea id="csc-org-description" name="org_description" rows="4"
+                            placeholder="Briefly describe your organisation's work and focus…"></textarea>
                     </div>
                     <button type="button" id="csc-next-btn" class="csc-btn-primary">Next</button>
                 </div>
@@ -447,6 +481,16 @@ class Csc_Registration {
                         <label for="csc-email-1">Email</label>
                         <input type="email" id="csc-email-1" name="email" placeholder="you@company.com" required
                             autocomplete="email">
+                    </div>
+                    <div class="csc-form-group">
+                        <label for="csc-linkedin-1">LinkedIn Profile URL <span class="csc-label-optional">(optional)</span></label>
+                        <input type="url" id="csc-linkedin-1" name="linkedin"
+                               placeholder="https://linkedin.com/in/yourname" autocomplete="url">
+                    </div>
+                    <div class="csc-form-group">
+                        <label for="csc-bio-1">Bio <span class="csc-label-optional">(optional)</span></label>
+                        <textarea id="csc-bio-1" name="bio" rows="3"
+                                  placeholder="Tell us a little about yourself…"></textarea>
                     </div>
 
                     <div class="csc-consent-group">
@@ -501,6 +545,16 @@ class Csc_Registration {
                     <input type="email" id="csc-email-2" name="email_2" placeholder="you@company.com" required
                         autocomplete="email">
                 </div>
+                <div class="csc-form-group">
+                    <label for="csc-linkedin-2">LinkedIn Profile URL <span class="csc-label-optional">(optional)</span></label>
+                    <input type="url" id="csc-linkedin-2" name="linkedin_2"
+                           placeholder="https://linkedin.com/in/yourname" autocomplete="url">
+                </div>
+                <div class="csc-form-group">
+                    <label for="csc-bio-2">Bio <span class="csc-label-optional">(optional)</span></label>
+                    <textarea id="csc-bio-2" name="bio_2" rows="3"
+                              placeholder="Tell us a little about yourself…"></textarea>
+                </div>
 
                 <div class="csc-consent-group">
                     <label class="csc-checkbox-label csc-consent-label">
@@ -545,8 +599,11 @@ class Csc_Registration {
     </div>
 </div>
 <script>
-window.cscCountries  = <?php echo wp_json_encode( csc_get_countries() ); ?>;
-window.cscUkCounties = <?php echo wp_json_encode( csc_get_uk_counties_flat() ); ?>;
+window.cscCountries     = <?php echo wp_json_encode( csc_get_countries() ); ?>;
+window.cscUkCounties    = <?php echo wp_json_encode( csc_get_uk_counties_flat() ); ?>;
+window.cscRegSectors    = <?php echo wp_json_encode( Csc_Organisations::get_company_types() ); ?>;
+window.cscRegIndustries = <?php echo wp_json_encode( Csc_Organisations::get_primary_industries() ); ?>;
+window.cscRegIgp        = <?php echo wp_json_encode( Csc_Organisations::get_igp_categories() ); ?>;
 </script>
 <?php
 		return ob_get_clean();
@@ -691,6 +748,8 @@ window.cscUkCounties = <?php echo wp_json_encode( csc_get_uk_counties_flat() ); 
 		$last_name       = sanitize_text_field( $_POST['last_name'] ?? '' );
 		$job_title       = sanitize_text_field( $_POST['job_title'] ?? '' );
 		$email           = sanitize_email( $_POST['email'] ?? '' );
+		$linkedin        = esc_url_raw( $_POST['linkedin'] ?? '' );
+		$bio             = sanitize_textarea_field( $_POST['bio'] ?? '' );
 		$org_id          = intval( $_POST['organisation_id'] ?? 0 );
 		$register_new    = ! empty( $_POST['register_new_org'] );
 
@@ -715,12 +774,18 @@ window.cscUkCounties = <?php echo wp_json_encode( csc_get_uk_counties_flat() ); 
 
 		// Handle new organisation registration
 		if ( $register_new ) {
-			$org_name     = sanitize_text_field( $_POST['org_name']     ?? '' );
-			$org_city     = sanitize_text_field( $_POST['org_city']     ?? '' );
-			$org_country  = sanitize_text_field( $_POST['org_country']  ?? '' );
-			$org_county   = sanitize_text_field( $_POST['org_county']   ?? '' );
-			$org_sector   = sanitize_text_field( $_POST['org_sector']   ?? '' );
-			$org_postcode = sanitize_text_field( $_POST['org_postcode'] ?? '' );
+			$org_name        = sanitize_text_field( $_POST['org_name']        ?? '' );
+			$org_address     = sanitize_text_field( $_POST['org_address']     ?? '' );
+			$org_city        = sanitize_text_field( $_POST['org_city']        ?? '' );
+			$org_country     = sanitize_text_field( $_POST['org_country']     ?? '' );
+			$org_county      = sanitize_text_field( $_POST['org_county']      ?? '' );
+			$org_postcode    = sanitize_text_field( $_POST['org_postcode']    ?? '' );
+			$org_sector      = sanitize_text_field( $_POST['org_sector']      ?? '' );
+			$org_industry    = sanitize_text_field( $_POST['org_industry']    ?? '' );
+			$org_igp         = sanitize_text_field( $_POST['org_igp']         ?? '' );
+			$org_phone       = sanitize_text_field( $_POST['org_phone']       ?? '' );
+			$org_website     = esc_url_raw(         $_POST['org_website']     ?? '' );
+			$org_description = sanitize_textarea_field( $_POST['org_description'] ?? '' );
 
 			if ( ! $org_name ) {
 				wp_send_json_error( array( 'message' => 'Please enter your organisation name.' ) );
@@ -737,10 +802,17 @@ window.cscUkCounties = <?php echo wp_json_encode( csc_get_uk_counties_flat() ); 
 			}
 
 			update_post_meta( $org_id, '_csc_org_sector',  $org_sector );
-			if ( $org_city )     update_post_meta( $org_id, '_csc_org_city',     $org_city );
-			if ( $org_country )  update_post_meta( $org_id, '_csc_org_country',  $org_country );
-			if ( $org_county )   update_post_meta( $org_id, '_csc_org_county',   $org_county );
-			if ( $org_postcode ) update_post_meta( $org_id, '_csc_org_postcode', $org_postcode );
+			if ( $org_address )     update_post_meta( $org_id, '_csc_org_address',      $org_address );
+			if ( $org_city )        update_post_meta( $org_id, '_csc_org_city',          $org_city );
+			if ( $org_city )        update_post_meta( $org_id, '_csc_org_location',      $org_city );
+			if ( $org_country )     update_post_meta( $org_id, '_csc_org_country',       $org_country );
+			if ( $org_county )      update_post_meta( $org_id, '_csc_org_county',        $org_county );
+			if ( $org_postcode )    update_post_meta( $org_id, '_csc_org_postcode',      $org_postcode );
+			if ( $org_industry )    update_post_meta( $org_id, '_csc_org_industry',      $org_industry );
+			if ( $org_igp )         update_post_meta( $org_id, '_csc_org_igp_category',  $org_igp );
+			if ( $org_phone )       update_post_meta( $org_id, '_csc_org_phone',         $org_phone );
+			if ( $org_website )     update_post_meta( $org_id, '_csc_org_website',       $org_website );
+			if ( $org_description ) update_post_meta( $org_id, '_csc_org_description',   $org_description );
 
 		} elseif ( ! $org_id ) {
 			wp_send_json_error( array( 'message' => 'Please select an organisation or register a new one.' ) );
@@ -768,10 +840,29 @@ window.cscUkCounties = <?php echo wp_json_encode( csc_get_uk_counties_flat() ); 
 		update_user_meta( $user_id, '_csc_job_title',       $job_title );
 		update_user_meta( $user_id, '_csc_organisation_id', $org_id );
 
+		// Grant company edit permission to whoever registered the organisation
+		if ( $register_new ) {
+			update_user_meta( $user_id, '_csc_can_edit_company', '1' );
+		}
+
+		// Optional profile fields
+		if ( $linkedin ) update_user_meta( $user_id, '_csc_linkedin', $linkedin );
+		if ( $bio )      update_user_meta( $user_id, '_csc_about',    $bio );
+
 		// Consent preferences
 		update_user_meta( $user_id, '_csc_consent_marketing',  $consent_marketing  ? '1' : '0' );
 		update_user_meta( $user_id, '_csc_consent_sharing',    $consent_sharing    ? '1' : '0' );
 		update_user_meta( $user_id, '_csc_consent_directory',  $consent_directory  ? '1' : '0' );
+
+		// Directory visibility — initialised from consent_directory so the profile
+		// toggles reflect the user's choice from the moment the account is created.
+		$dir_vis = $consent_directory ? '1' : '0';
+		update_user_meta( $user_id, '_csc_dir_org_visible',     $dir_vis );
+		update_user_meta( $user_id, '_csc_dir_profile_visible', $dir_vis );
+
+		// Security defaults — both off until the user opts in via Settings.
+		update_user_meta( $user_id, '_csc_2fa_enabled',  '0' );
+		update_user_meta( $user_id, '_csc_login_alerts', '0' );
 
 		// Notify site admin
 		$this->notify_admin_new_application( $user_id, $org_id );

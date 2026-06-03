@@ -176,8 +176,8 @@ class Csc_Forum {
 
 				<!-- Page header -->
 				<div class="csc-forum-header">
-					<p class="csc-forum-tagline">A space to share knowledge, explore opportunities, and collaborate with other members.</p>
-					<button class="csc-btn-primary csc-forum-create-btn" id="csc-forum-create-btn">Create a Conversation</button>
+					<p class="csc-forum-tagline">A space to share knowledge, explore opportunities, and collaborate with other members across the Celtic Sea Cluster network.</p>
+					<button class="csc-btn-primary csc-forum-create-btn" id="csc-forum-create-btn">Start a Discussion</button>
 				</div>
 
 				<!-- Search -->
@@ -311,19 +311,10 @@ class Csc_Forum {
 							<?php endforeach; ?>
 						</select>
 					</div>
-					<div class="csc-form-group">
-						<label class="csc-label">Tags</label>
-						<div class="csc-tag-input-wrap" id="csc-forum-tag-wrap">
-							<div class="csc-tag-chips" id="csc-forum-tag-chips"></div>
-							<input type="text" id="csc-forum-tag-input" class="csc-tag-input" placeholder="Add a tag and press Enter">
-							<input type="hidden" name="topic_tags" id="csc-forum-tags-hidden">
-						</div>
-						<span class="csc-forum-tag-count" id="csc-forum-tag-count">0 / 5</span>
-					</div>
 					<p class="csc-forum-modal-error" id="csc-forum-modal-error" hidden></p>
 					<div class="csc-forum-modal-actions">
 						<button type="button" class="csc-btn-outline" id="csc-forum-cancel-btn">Cancel</button>
-						<button type="submit" class="csc-btn-primary" id="csc-forum-submit-btn">Start Conversation</button>
+						<button type="submit" class="csc-btn-primary" id="csc-forum-submit-btn">Start a Discussion</button>
 					</div>
 				</form>
 			</div>
@@ -344,31 +335,6 @@ class Csc_Forum {
 			document.getElementById('csc-forum-cancel-btn').addEventListener('click', closeModal);
 			modal.addEventListener('click', function(e){ if(e.target===modal) closeModal(); });
 
-			// Tag input
-			var tags = [];
-			var tagInput = document.getElementById('csc-forum-tag-input');
-			var tagChips = document.getElementById('csc-forum-tag-chips');
-			var tagsHidden = document.getElementById('csc-forum-tags-hidden');
-			var tagCount = document.getElementById('csc-forum-tag-count');
-			function renderTags() {
-				tagChips.innerHTML = '';
-				tags.forEach(function(t, i){
-					var chip = document.createElement('span');
-					chip.className = 'csc-tag-chip';
-					chip.innerHTML = t + '<button type="button" class="csc-tag-chip-remove" aria-label="Remove tag">&times;</button>';
-					chip.querySelector('button').addEventListener('click', function(){ tags.splice(i,1); renderTags(); });
-					tagChips.appendChild(chip);
-				});
-				tagsHidden.value = tags.join(',');
-				tagCount.textContent = tags.length + ' / 5';
-			}
-			tagInput.addEventListener('keydown', function(e){
-				if((e.key === 'Enter' || e.key === ',') && this.value.trim()){
-					e.preventDefault();
-					if(tags.length < 5){ tags.push(this.value.trim()); renderTags(); this.value=''; }
-				}
-			});
-
 			// Submit create form
 			document.getElementById('csc-forum-create-form').addEventListener('submit', function(e){
 				e.preventDefault();
@@ -383,9 +349,9 @@ class Csc_Forum {
 					.then(function(r){ return r.json(); })
 					.then(function(res){
 						if(res.success){ window.location = forumUrl + '?forum_topic=' + res.data.id; }
-						else { err.textContent = res.data || 'Something went wrong.'; err.removeAttribute('hidden'); btn.disabled=false; btn.textContent='Start Conversation'; }
+						else { err.textContent = res.data || 'Something went wrong.'; err.removeAttribute('hidden'); btn.disabled=false; btn.textContent='Start a Discussion'; }
 					})
-					.catch(function(){ err.textContent='Network error, please try again.'; err.removeAttribute('hidden'); btn.disabled=false; btn.textContent='Start Conversation'; });
+					.catch(function(){ err.textContent='Network error, please try again.'; err.removeAttribute('hidden'); btn.disabled=false; btn.textContent='Start a Discussion'; });
 			});
 
 			// Row click

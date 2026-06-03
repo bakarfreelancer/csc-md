@@ -373,6 +373,30 @@
             onSelect:   null,
             onClear:    null,
         });
+
+        makeLocalTypeahead({
+            inputId:    '#reg-sector-input',
+            hiddenId:   '#reg-sector-hidden',
+            dropdownId: '#reg-sector-dropdown',
+            getData:    function () { return window.cscRegSectors || []; },
+            renderItem: function (item) { return { label: item, sub: null }; },
+        });
+
+        makeLocalTypeahead({
+            inputId:    '#reg-industry-input',
+            hiddenId:   '#reg-industry-hidden',
+            dropdownId: '#reg-industry-dropdown',
+            getData:    function () { return window.cscRegIndustries || []; },
+            renderItem: function (item) { return { label: item, sub: null }; },
+        });
+
+        makeLocalTypeahead({
+            inputId:    '#reg-igp-input',
+            hiddenId:   '#reg-igp-hidden',
+            dropdownId: '#reg-igp-dropdown',
+            getData:    function () { return window.cscRegIgp || []; },
+            renderItem: function (item) { return { label: item, sub: null }; },
+        });
     }
 
     /* -----------------------------------------------------------------------
@@ -451,20 +475,34 @@
         $btn.prop('disabled', true).text('Submitting\u2026');
 
         var data = {
-            action:           'csc_register',
-            nonce:            cscAjax.registerNonce,
-            first_name:       $form.find('[name="first_name"]').val().trim(),
-            last_name:        $form.find('[name="last_name"]').val().trim(),
-            job_title:        $form.find('[name="job_title"]').val().trim(),
-            email:            $form.find('[name="email"]').val().trim(),
-            organisation_id:  orgId,
-            register_new_org: registerNew ? 1 : 0,
+            action:            'csc_register',
+            nonce:             cscAjax.registerNonce,
+            first_name:        $form.find('[name="first_name"]').val().trim(),
+            last_name:         $form.find('[name="last_name"]').val().trim(),
+            job_title:         $form.find('[name="job_title"]').val().trim(),
+            email:             $form.find('[name="email"]').val().trim(),
+            linkedin:          $form.find('[name="linkedin"]').val().trim(),
+            bio:               $form.find('[name="bio"]').val().trim(),
+            organisation_id:   orgId,
+            register_new_org:  registerNew ? 1 : 0,
+            consent_marketing: $form.find('[name="consent_marketing"]').is(':checked') ? 1 : 0,
+            consent_sharing:   $form.find('[name="consent_sharing"]').is(':checked') ? 1 : 0,
+            consent_directory: $form.find('[name="consent_directory"]').is(':checked') ? 1 : 0,
         };
 
         if (registerNew) {
-            data.org_name     = $('#csc-org-name').val().trim();
-            data.org_location = $('#csc-org-location').val().trim();
-            data.org_sector   = $('#csc-org-sector').val();
+            data.org_name        = $('#csc-org-name').val().trim();
+            data.org_address     = $('#csc-org-address').val().trim();
+            data.org_city        = $('#csc-org-city').val().trim();
+            data.org_country     = $('#reg-country-hidden').val();
+            data.org_county      = $('#reg-county-hidden').val();
+            data.org_postcode    = $('#csc-org-postcode').val().trim();
+            data.org_sector      = $('#reg-sector-hidden').val();
+            data.org_industry    = $('#reg-industry-hidden').val();
+            data.org_igp         = $('#reg-igp-hidden').val();
+            data.org_phone       = $('#csc-org-phone').val().trim();
+            data.org_website     = $('#csc-org-website').val().trim();
+            data.org_description = $('#csc-org-description').val().trim();
         }
 
         submitRegistration(data, $btn, $msg, $form);
@@ -491,17 +529,31 @@
         $btn.prop('disabled', true).text('Submitting\u2026');
 
         var data = {
-            action:           'csc_register',
-            nonce:            cscAjax.registerNonce,
-            first_name:       $('#csc-first-name-2').val().trim(),
-            last_name:        $('#csc-last-name-2').val().trim(),
-            job_title:        $('#csc-job-title-2').val().trim(),
-            email:            $('#csc-email-2').val().trim(),
-            organisation_id:  '',
-            register_new_org: 1,
-            org_name:         $('#csc-org-name').val().trim(),
-            org_location:     $('#csc-org-location').val().trim(),
-            org_sector:       $('#csc-org-sector').val(),
+            action:            'csc_register',
+            nonce:             cscAjax.registerNonce,
+            first_name:        $('#csc-first-name-2').val().trim(),
+            last_name:         $('#csc-last-name-2').val().trim(),
+            job_title:         $('#csc-job-title-2').val().trim(),
+            email:             $('#csc-email-2').val().trim(),
+            linkedin:          $('#csc-linkedin-2').val().trim(),
+            bio:               $('#csc-bio-2').val().trim(),
+            organisation_id:   '',
+            register_new_org:  1,
+            org_name:          $('#csc-org-name').val().trim(),
+            org_address:       $('#csc-org-address').val().trim(),
+            org_city:          $('#csc-org-city').val().trim(),
+            org_country:       $('#reg-country-hidden').val(),
+            org_county:        $('#reg-county-hidden').val(),
+            org_postcode:      $('#csc-org-postcode').val().trim(),
+            org_sector:        $('#reg-sector-hidden').val(),
+            org_industry:      $('#reg-industry-hidden').val(),
+            org_igp:           $('#reg-igp-hidden').val(),
+            org_phone:         $('#csc-org-phone').val().trim(),
+            org_website:       $('#csc-org-website').val().trim(),
+            org_description:   $('#csc-org-description').val().trim(),
+            consent_marketing: $form.find('[name="consent_marketing"]').is(':checked') ? 1 : 0,
+            consent_sharing:   $form.find('[name="consent_sharing"]').is(':checked') ? 1 : 0,
+            consent_directory: $form.find('[name="consent_directory"]').is(':checked') ? 1 : 0,
         };
 
         submitRegistration(data, $btn, $msg, $form);
@@ -997,84 +1049,191 @@
     });
 
     /* -----------------------------------------------------------------------
+     * MULTI-SELECT widget — typeahead dropdown with removable chips
+     * opts: { inputId, hiddenId, dropdownId, pillsId, getData, getLabel, getValue, preSelected }
+     * --------------------------------------------------------------------- */
+    function makeMultiSelect(opts) {
+        var $input    = $(opts.inputId);
+        var $hidden   = $(opts.hiddenId);
+        var $dropdown = $(opts.dropdownId);
+        var $pills    = $(opts.pillsId);
+
+        if (!$input.length) return;
+
+        function getLabel(item) { return opts.getLabel ? opts.getLabel(item) : item; }
+        function getValue(item) { return opts.getValue ? opts.getValue(item) : item; }
+
+        function getSelected() {
+            var v = $hidden.val().trim();
+            return v ? v.split(',').map($.trim).filter(Boolean) : [];
+        }
+
+        function setSelected(arr) { $hidden.val(arr.join(',')); }
+
+        function renderPills() {
+            $pills.empty();
+            getSelected().forEach(function (val) {
+                $('<span class="csc-ms-pill">')
+                    .text(val)
+                    .append(
+                        $('<button type="button" class="csc-ms-pill-remove" aria-label="Remove">\u00d7</button>')
+                            .on('click', function () {
+                                setSelected(getSelected().filter(function (v) { return v !== val; }));
+                                renderPills();
+                                if ($dropdown.is(':visible')) buildDropdown($input.val());
+                            })
+                    )
+                    .appendTo($pills);
+            });
+        }
+
+        function normalise(s) { return (s + '').toLowerCase().replace(/[^a-z0-9 ]/g, ''); }
+
+        function buildDropdown(query) {
+            var all      = opts.getData();
+            var selected = getSelected();
+            var q        = normalise(query || '');
+            var matches  = all.filter(function (item) {
+                var val = getValue(item);
+                if (selected.indexOf(val) !== -1) return false;
+                return !q || normalise(getLabel(item)).indexOf(q) !== -1;
+            });
+
+            $dropdown.empty();
+            if (!matches.length) {
+                $('<li class="csc-typeahead-item csc-typeahead-item--empty">No options</li>').appendTo($dropdown);
+            } else {
+                matches.forEach(function (item) {
+                    var val = getValue(item);
+                    $('<li class="csc-typeahead-item" role="option">').text(getLabel(item))
+                        .on('click', function () {
+                            var sel = getSelected();
+                            sel.push(val);
+                            setSelected(sel);
+                            renderPills();
+                            $input.val('').focus();
+                            buildDropdown('');
+                        })
+                        .appendTo($dropdown);
+                });
+            }
+            $dropdown.show();
+        }
+
+        if (opts.preSelected && opts.preSelected.length) { setSelected(opts.preSelected); }
+        renderPills();
+
+        $input.on('focus click', function () { if ($dropdown.is(':hidden')) buildDropdown($input.val()); });
+        $input.on('input', function () { buildDropdown($input.val()); });
+        $input.on('keydown', function (e) { if (e.key === 'Escape') $dropdown.hide(); });
+
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest($input.closest('.csc-ms-wrap')).length &&
+                !$(e.target).closest($dropdown).length) {
+                $dropdown.hide();
+            }
+        });
+    }
+
+    /* -----------------------------------------------------------------------
      * DIRECTORY FILTER TYPEAHEADS
      * --------------------------------------------------------------------- */
     if (typeof window.cscDirData !== 'undefined') {
         var dd = window.cscDirData;
-        var flat = function (arr) { return arr.map(function (s) { return { label: s, sub: null }; }); };
 
-        // Country
-        makeLocalTypeahead({
-            inputId:    '#df-country-vis',
-            hiddenId:   '#df-country-val',
-            dropdownId: '#df-country-drop',
-            getData:    function () { return dd.countries; },
-            renderItem: function (s) { return { label: s, sub: null }; },
+        // Country (multi-select)
+        makeMultiSelect({
+            inputId:     '#df-country-vis',
+            hiddenId:    '#df-country-val',
+            dropdownId:  '#df-country-drop',
+            pillsId:     '#df-country-pills',
+            getData:     function () { return dd.countries; },
+            preSelected: dd.selCountries || [],
         });
 
-        // County (UK counties with region grouping)
-        makeLocalTypeahead({
-            inputId:    '#df-county-vis',
-            hiddenId:   '#df-county-val',
-            dropdownId: '#df-county-drop',
-            getData:    function () { return dd.ukCounties; },
-            renderItem: function (item) { return { label: item.name, sub: item.region }; },
+        // County (multi-select)
+        makeMultiSelect({
+            inputId:     '#df-county-vis',
+            hiddenId:    '#df-county-val',
+            dropdownId:  '#df-county-drop',
+            pillsId:     '#df-county-pills',
+            getData:     function () { return dd.ukCounties.map(function (c) { return c.name; }); },
+            preSelected: dd.selCounties || [],
         });
 
-        // Primary Industry
-        makeLocalTypeahead({
-            inputId:    '#df-industry-vis',
-            hiddenId:   '#df-industry-val',
-            dropdownId: '#df-industry-drop',
-            getData:    function () { return dd.industries; },
-            renderItem: function (s) { return { label: s, sub: null }; },
+        // Primary Industry (multi-select)
+        makeMultiSelect({
+            inputId:     '#df-industry-vis',
+            hiddenId:    '#df-industry-val',
+            dropdownId:  '#df-industry-drop',
+            pillsId:     '#df-industry-pills',
+            getData:     function () { return dd.industries; },
+            preSelected: dd.selIndustries || [],
         });
 
-        // IGP Category
-        makeLocalTypeahead({
-            inputId:    '#df-igp-vis',
-            hiddenId:   '#df-igp-val',
-            dropdownId: '#df-igp-drop',
-            getData:    function () { return dd.igpCats; },
-            renderItem: function (s) { return { label: s, sub: null }; },
+        // IGP Category (multi-select)
+        makeMultiSelect({
+            inputId:     '#df-igp-vis',
+            hiddenId:    '#df-igp-val',
+            dropdownId:  '#df-igp-drop',
+            pillsId:     '#df-igp-pills',
+            getData:     function () { return dd.igpCats; },
+            preSelected: dd.selIgp || [],
         });
 
-        // Company Type
-        makeLocalTypeahead({
-            inputId:    '#df-type-vis',
-            hiddenId:   '#df-type-val',
-            dropdownId: '#df-type-drop',
-            getData:    function () { return dd.companyTypes; },
-            renderItem: function (s) { return { label: s, sub: null }; },
+        // Company Type (multi-select)
+        makeMultiSelect({
+            inputId:     '#df-type-vis',
+            hiddenId:    '#df-type-val',
+            dropdownId:  '#df-type-drop',
+            pillsId:     '#df-type-pills',
+            getData:     function () { return dd.companyTypes; },
+            preSelected: dd.selCoTypes || [],
         });
 
-        // Postcode — dynamically pulled from member submissions
-        if (dd.postcodes && dd.postcodes.length) {
-            makeLocalTypeahead({
-                inputId:    '#df-postcode-vis',
-                hiddenId:   '#df-postcode-val',
-                dropdownId: '#df-postcode-drop',
-                getData:    function () { return dd.postcodes; },
-                renderItem: function (s) { return { label: s, sub: null }; },
-            });
-        }
+        // Postcode (multi-select)
+        makeMultiSelect({
+            inputId:     '#df-postcode-vis',
+            hiddenId:    '#df-postcode-val',
+            dropdownId:  '#df-postcode-drop',
+            pillsId:     '#df-postcode-pills',
+            getData:     function () { return dd.postcodes || []; },
+            preSelected: dd.selPostcodes || [],
+        });
+    }
+
+    /* -----------------------------------------------------------------------
+     * REPS — Company multi-select filter
+     * --------------------------------------------------------------------- */
+    if (typeof window.cscRepsOrgs !== 'undefined') {
+        makeMultiSelect({
+            inputId:     '#reps-co-vis',
+            hiddenId:    '#reps-co-val',
+            dropdownId:  '#reps-co-drop',
+            pillsId:     '#reps-co-pills',
+            getData:     function () { return window.cscRepsOrgs; },
+            preSelected: window.cscRepsOrgsSel || [],
+        });
     }
 
     /* -----------------------------------------------------------------------
      * MEMBER DIRECTORY
      * --------------------------------------------------------------------- */
 
-    // Filter panel toggle
+    // Filter panel toggle (panel starts open; clicking collapses/expands)
     $('#csc-filter-toggle').on('click', function () {
         var $panel   = $('#csc-filter-panel');
-        var expanded = $panel.attr('hidden') === undefined;
+        var $label   = $(this).find('.csc-filter-btn-label');
+        var hidden   = $panel.attr('hidden') !== undefined;
 
-        if (expanded) {
-            $panel.attr('hidden', '');
-            $(this).removeClass('is-active').attr('aria-expanded', 'false');
-        } else {
+        if (hidden) {
             $panel.removeAttr('hidden');
             $(this).addClass('is-active').attr('aria-expanded', 'true');
+            $label.text('Close Filters');
+        } else {
+            $panel.attr('hidden', '');
+            $(this).removeClass('is-active').attr('aria-expanded', 'false');
+            $label.text('All Filters');
         }
     });
 

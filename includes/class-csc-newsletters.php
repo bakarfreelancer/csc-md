@@ -142,37 +142,44 @@ class Csc_Newsletters {
 
 	public function render_settings_page() {
 		?>
-		<div class="wrap">
-			<h1>CSC Newsletters &amp; Resources Settings</h1>
-			<form method="post" action="options.php">
-				<?php settings_fields( 'csc_resource_group' ); ?>
-				<h2 class="title">Resources Section</h2>
-				<table class="form-table">
-					<tr>
-						<th><label for="csc_resource_heading">Section Heading</label></th>
-						<td>
-							<input type="text" id="csc_resource_heading" name="csc_resource_heading"
-								value="<?php echo esc_attr( get_option( 'csc_resource_heading', 'Resources' ) ); ?>"
-								class="regular-text">
-							<p class="description">Heading shown above the resources list. Defaults to "Resources".</p>
-						</td>
-					</tr>
-				</table>
-				<?php submit_button( 'Save Settings' ); ?>
-			</form>
-			<hr>
-			<h2 class="title">Managing Resources</h2>
-			<p>Add and manage individual resources via <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=csc_resource' ) ); ?>"><strong>Resources</strong></a> in the admin menu.</p>
-			<p>Each resource has a <strong>title</strong> (the link label) and a <strong>URL</strong> field. Use the <strong>Order</strong> field (bottom of the edit screen) to control the display order — lower numbers appear first.</p>
-			<hr>
-			<h2 class="title">Managing Newsletters</h2>
-			<p>Add newsletters via <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=csc_newsletter' ) ); ?>"><strong>Newsletters</strong></a> in the admin menu. Each newsletter supports the following custom fields:</p>
-			<ul style="list-style:disc;padding-left:20px;">
-				<li><code>csc_newsletter_tags</code> — comma-separated tags shown as pills on the card and single view.</li>
-				<li><code>csc_newsletter_date_label</code> — date label shown on the front end (e.g. "January 2025"). Defaults to the post publish month if left blank.</li>
-			</ul>
-		</div>
-		<?php
+<div class="wrap">
+    <h1>CSC Newsletters &amp; Resources Settings</h1>
+    <form method="post" action="options.php">
+        <?php settings_fields( 'csc_resource_group' ); ?>
+        <h2 class="title">Resources Section</h2>
+        <table class="form-table">
+            <tr>
+                <th><label for="csc_resource_heading">Section Heading</label></th>
+                <td>
+                    <input type="text" id="csc_resource_heading" name="csc_resource_heading"
+                        value="<?php echo esc_attr( get_option( 'csc_resource_heading', 'Resources' ) ); ?>"
+                        class="regular-text">
+                    <p class="description">Heading shown above the resources list. Defaults to "Resources".</p>
+                </td>
+            </tr>
+        </table>
+        <?php submit_button( 'Save Settings' ); ?>
+    </form>
+    <hr>
+    <h2 class="title">Managing Resources</h2>
+    <p>Add and manage individual resources via <a
+            href="<?php echo esc_url( admin_url( 'edit.php?post_type=csc_resource' ) ); ?>"><strong>Resources</strong></a>
+        in the admin menu.</p>
+    <p>Each resource has a <strong>title</strong> (the link label) and a <strong>URL</strong> field. Use the
+        <strong>Order</strong> field (bottom of the edit screen) to control the display order — lower numbers appear
+        first.</p>
+    <hr>
+    <h2 class="title">Managing Newsletters</h2>
+    <p>Add newsletters via <a
+            href="<?php echo esc_url( admin_url( 'edit.php?post_type=csc_newsletter' ) ); ?>"><strong>Newsletters</strong></a>
+        in the admin menu. Each newsletter supports the following custom fields:</p>
+    <ul style="list-style:disc;padding-left:20px;">
+        <li><code>csc_newsletter_tags</code> — comma-separated tags shown as pills on the card and single view.</li>
+        <li><code>csc_newsletter_date_label</code> — date label shown on the front end (e.g. "January 2025"). Defaults
+            to the post publish month if left blank.</li>
+    </ul>
+</div>
+<?php
 	}
 
 	/* -----------------------------------------------------------------------
@@ -223,45 +230,56 @@ class Csc_Newsletters {
 
 		ob_start();
 		?>
-		<div class="csc-member-portal">
-			<?php echo Csc_Dashboard::render_sidebar( 'newsletters', $user ); ?>
+<div class="csc-member-portal">
+    <?php echo Csc_Dashboard::render_sidebar( 'newsletters', $user ); ?>
 
-			<main class="csc-portal-main">
+    <main class="csc-portal-main">
 
-				<!-- Resources section -->
-				<div class="csc-nl-section csc-nl-resources">
-					<h2 class="csc-nl-section-title"><?php echo esc_html( $resource_heading ); ?></h2>
-					<?php if ( empty( $resources ) ) : ?>
-					<p class="csc-nl-resources-empty">No resources have been added yet. Check back soon.</p>
-					<?php else : ?>
-					<div class="csc-nl-resource-list">
-						<?php foreach ( $resources as $resource ) :
+        <!-- Resources section -->
+        <div class="csc-nl-section csc-nl-resources">
+            <h2 class="csc-nl-section-title"><?php echo esc_html( $resource_heading ); ?></h2>
+            <?php if ( empty( $resources ) ) : ?>
+            <p class="csc-nl-resources-empty">No resources have been added yet. Check back soon.</p>
+            <?php else : ?>
+            <div class="csc-nl-resource-list">
+                <?php foreach ( $resources as $resource ) :
 							$res_url = get_post_meta( $resource->ID, '_csc_resource_url', true );
 						?>
-						<div class="csc-nl-resource-item">
-							<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
-							<?php if ( $res_url ) : ?>
-							<a href="<?php echo esc_url( $res_url ); ?>" target="_blank" rel="noopener noreferrer" class="csc-nl-resource-link"><?php echo esc_html( $resource->post_title ); ?></a>
-							<?php else : ?>
-							<span class="csc-nl-resource-label"><?php echo esc_html( $resource->post_title ); ?></span>
-							<?php endif; ?>
-						</div>
-						<?php endforeach; ?>
-					</div>
-					<?php endif; ?>
-				</div>
+                <div class="csc-nl-resource-item">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z" />
+                        <polyline points="14,2 14,8 20,8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10,9 9,9 8,9" />
+                    </svg>
+                    <?php if ( $res_url ) : ?>
+                    <a href="<?php echo esc_url( $res_url ); ?>" target="_blank" rel="noopener noreferrer"
+                        class="csc-nl-resource-link"><?php echo esc_html( $resource->post_title ); ?></a>
+                    <?php else : ?>
+                    <span class="csc-nl-resource-label"><?php echo esc_html( $resource->post_title ); ?></span>
+                    <?php endif; ?>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </div>
 
-				<!-- News Letters section -->
-				<div class="csc-nl-section csc-nl-letters">
-					<h2 class="csc-nl-section-title">News Letters</h2>
-					<?php if ( empty( $newsletters ) ) : ?>
-					<div class="csc-dir-empty" style="padding: 40px 0;">
-						<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="6" y="10" width="36" height="28" rx="3"/><polyline points="6,10 24,28 42,10"/></svg>
-						<p>No newsletters yet. Check back soon.</p>
-					</div>
-					<?php else : ?>
-					<div class="csc-nl-list">
-						<?php foreach ( $newsletters as $nl ) :
+        <!-- News Letters section -->
+        <div class="csc-nl-section csc-nl-letters">
+            <h2 class="csc-nl-section-title">Newsletters</h2>
+            <?php if ( empty( $newsletters ) ) : ?>
+            <div class="csc-dir-empty" style="padding: 40px 0;">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <rect x="6" y="10" width="36" height="28" rx="3" />
+                    <polyline points="6,10 24,28 42,10" />
+                </svg>
+                <p>No newsletters yet. Check back soon.</p>
+            </div>
+            <?php else : ?>
+            <div class="csc-nl-list">
+                <?php foreach ( $newsletters as $nl ) :
 							$date_label = get_post_meta( $nl->ID, 'csc_newsletter_date_label', true )
 								?: wp_date( 'F Y', strtotime( $nl->post_date ) );
 							$tags_raw   = get_post_meta( $nl->ID, 'csc_newsletter_tags', true );
@@ -269,34 +287,43 @@ class Csc_Newsletters {
 							$excerpt    = wp_trim_words( wp_strip_all_tags( $nl->post_content ), 25, '…' );
 							$single_url = add_query_arg( 'nl_id', $nl->ID, $nl_url );
 						?>
-						<a href="<?php echo esc_url( $single_url ); ?>" class="csc-nl-item">
-							<div class="csc-nl-item__date">
-								<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="16" height="14" rx="1"/><line x1="2" y1="8" x2="18" y2="8"/><line x1="6" y1="2" x2="6" y2="6"/><line x1="14" y1="2" x2="14" y2="6"/></svg>
-								<?php echo esc_html( $date_label ); ?>
-							</div>
-							<div class="csc-nl-item__body">
-								<h3 class="csc-nl-item__title"><?php echo esc_html( $nl->post_title ); ?></h3>
-								<?php if ( $excerpt ) : ?>
-								<p class="csc-nl-item__excerpt"><?php echo esc_html( $excerpt ); ?></p>
-								<?php endif; ?>
-								<?php if ( ! empty( $tags ) ) : ?>
-								<div class="csc-nl-item__tags">
-									<?php foreach ( $tags as $tag ) : ?>
-									<span class="csc-dir-tag csc-dir-tag--sector"><?php echo esc_html( $tag ); ?></span>
-									<?php endforeach; ?>
-								</div>
-								<?php endif; ?>
-							</div>
-							<span class="csc-nl-item__arrow" aria-hidden="true">
-								<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 4 13 10 7 16"/></svg>
-							</span>
-						</a>
-						<?php endforeach; ?>
-					</div>
+                <a href="<?php echo esc_url( $single_url ); ?>" class="csc-nl-item">
+                    <div class="csc-nl-item__date">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="2" y="4" width="16" height="14" rx="1" />
+                            <line x1="2" y1="8" x2="18" y2="8" />
+                            <line x1="6" y1="2" x2="6" y2="6" />
+                            <line x1="14" y1="2" x2="14" y2="6" />
+                        </svg>
+                        <?php echo esc_html( $date_label ); ?>
+                    </div>
+                    <div class="csc-nl-item__body">
+                        <h3 class="csc-nl-item__title"><?php echo esc_html( $nl->post_title ); ?></h3>
+                        <?php if ( $excerpt ) : ?>
+                        <p class="csc-nl-item__excerpt"><?php echo esc_html( $excerpt ); ?></p>
+                        <?php endif; ?>
+                        <?php if ( ! empty( $tags ) ) : ?>
+                        <div class="csc-nl-item__tags">
+                            <?php foreach ( $tags as $tag ) : ?>
+                            <span class="csc-dir-tag csc-dir-tag--sector"><?php echo esc_html( $tag ); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <span class="csc-nl-item__arrow" aria-hidden="true">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="7 4 13 10 7 16" />
+                        </svg>
+                    </span>
+                </a>
+                <?php endforeach; ?>
+            </div>
 
-					<?php if ( $nl_pages > 1 ) : ?>
-					<div class="csc-dir-pagination">
-						<?php echo paginate_links( array(
+            <?php if ( $nl_pages > 1 ) : ?>
+            <div class="csc-dir-pagination">
+                <?php echo paginate_links( array(
 							'base'      => add_query_arg( 'nl_page', '%#%', $nl_url ),
 							'format'    => '',
 							'current'   => $paged,
@@ -305,15 +332,15 @@ class Csc_Newsletters {
 							'next_text' => '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 10 8 6 12"/></svg>',
 							'type'      => 'list',
 						) ); ?>
-					</div>
-					<?php endif; ?>
+            </div>
+            <?php endif; ?>
 
-					<?php endif; ?>
-				</div>
+            <?php endif; ?>
+        </div>
 
-			</main>
-		</div>
-		<?php
+    </main>
+</div>
+<?php
 		return ob_get_clean();
 	}
 
@@ -335,41 +362,50 @@ class Csc_Newsletters {
 
 		ob_start();
 		?>
-		<div class="csc-member-portal">
-			<?php echo Csc_Dashboard::render_sidebar( 'newsletters', $user ); ?>
+<div class="csc-member-portal">
+    <?php echo Csc_Dashboard::render_sidebar( 'newsletters', $user ); ?>
 
-			<main class="csc-portal-main">
+    <main class="csc-portal-main">
 
-				<!-- Back navigation -->
-				<nav class="csc-co-back" aria-label="Breadcrumb">
-					<a href="<?php echo esc_url( $nl_url ); ?>" class="csc-co-back__link">
-						<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="13 4 7 10 13 16"/></svg>
-						Newsletters &amp; Resources
-					</a>
-				</nav>
+        <!-- Back navigation -->
+        <nav class="csc-co-back" aria-label="Breadcrumb">
+            <a href="<?php echo esc_url( $nl_url ); ?>" class="csc-co-back__link">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="13 4 7 10 13 16" />
+                </svg>
+                Newsletters &amp; Resources
+            </a>
+        </nav>
 
-				<!-- Newsletter article -->
-				<div class="csc-nl-single">
-					<div class="csc-nl-single__meta">
-						<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="16" height="14" rx="1"/><line x1="2" y1="8" x2="18" y2="8"/><line x1="6" y1="2" x2="6" y2="6"/><line x1="14" y1="2" x2="14" y2="6"/></svg>
-						<?php echo esc_html( $date_label ); ?>
-					</div>
-					<h1 class="csc-nl-single__title"><?php echo esc_html( $nl->post_title ); ?></h1>
-					<?php if ( ! empty( $tags ) ) : ?>
-					<div class="csc-nl-single__tags">
-						<?php foreach ( $tags as $tag ) : ?>
-						<span class="csc-dir-tag csc-dir-tag--sector"><?php echo esc_html( $tag ); ?></span>
-						<?php endforeach; ?>
-					</div>
-					<?php endif; ?>
-					<div class="csc-nl-single__body">
-						<?php echo wp_kses_post( wpautop( $nl->post_content ) ); ?>
-					</div>
-				</div>
+        <!-- Newsletter article -->
+        <div class="csc-nl-single">
+            <div class="csc-nl-single__meta">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <rect x="2" y="4" width="16" height="14" rx="1" />
+                    <line x1="2" y1="8" x2="18" y2="8" />
+                    <line x1="6" y1="2" x2="6" y2="6" />
+                    <line x1="14" y1="2" x2="14" y2="6" />
+                </svg>
+                <?php echo esc_html( $date_label ); ?>
+            </div>
+            <h1 class="csc-nl-single__title"><?php echo esc_html( $nl->post_title ); ?></h1>
+            <?php if ( ! empty( $tags ) ) : ?>
+            <div class="csc-nl-single__tags">
+                <?php foreach ( $tags as $tag ) : ?>
+                <span class="csc-dir-tag csc-dir-tag--sector"><?php echo esc_html( $tag ); ?></span>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+            <div class="csc-nl-single__body">
+                <?php echo wp_kses_post( wpautop( $nl->post_content ) ); ?>
+            </div>
+        </div>
 
-			</main>
-		</div>
-		<?php
+    </main>
+</div>
+<?php
 		return ob_get_clean();
 	}
 
@@ -380,25 +416,34 @@ class Csc_Newsletters {
 		$nl_url = Csc_Dashboard::portal_url( 'member-newsletters' );
 		ob_start();
 		?>
-		<div class="csc-member-portal">
-			<?php echo Csc_Dashboard::render_sidebar( 'newsletters', $user ); ?>
-			<main class="csc-portal-main">
-				<div class="csc-not-found-wrap">
-					<div class="csc-not-found-card">
-						<div class="csc-not-found-icon">
-							<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="12" width="48" height="40" rx="3"/><polyline points="8,12 32,36 56,12"/><line x1="38" y1="38" x2="50" y2="50"/><line x1="50" y1="38" x2="38" y2="50"/></svg>
-						</div>
-						<h2 class="csc-not-found-title">Newsletter not found</h2>
-						<p class="csc-not-found-message">This newsletter is unavailable or may have been removed.</p>
-						<a href="<?php echo esc_url( $nl_url ); ?>" class="csc-btn-primary csc-not-found-btn">
-							<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="13 4 7 10 13 16"/></svg>
-							Back to Newsletters
-						</a>
-					</div>
-				</div>
-			</main>
-		</div>
-		<?php
+<div class="csc-member-portal">
+    <?php echo Csc_Dashboard::render_sidebar( 'newsletters', $user ); ?>
+    <main class="csc-portal-main">
+        <div class="csc-not-found-wrap">
+            <div class="csc-not-found-card">
+                <div class="csc-not-found-icon">
+                    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
+                        <rect x="8" y="12" width="48" height="40" rx="3" />
+                        <polyline points="8,12 32,36 56,12" />
+                        <line x1="38" y1="38" x2="50" y2="50" />
+                        <line x1="50" y1="38" x2="38" y2="50" />
+                    </svg>
+                </div>
+                <h2 class="csc-not-found-title">Newsletter not found</h2>
+                <p class="csc-not-found-message">This newsletter is unavailable or may have been removed.</p>
+                <a href="<?php echo esc_url( $nl_url ); ?>" class="csc-btn-primary csc-not-found-btn">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="13 4 7 10 13 16" />
+                    </svg>
+                    Back to Newsletters
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+<?php
 		return ob_get_clean();
 	}
 
