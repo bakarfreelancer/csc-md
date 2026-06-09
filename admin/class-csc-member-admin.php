@@ -37,64 +37,127 @@ class Csc_Member_Admin {
 	 * Members admin page
 	 * --------------------------------------------------------------------- */
 	public function render_members_page() {
-		$filter = sanitize_text_field( $_GET['csc_filter'] ?? 'pending' );
-		$paged  = max( 1, intval( $_GET['paged'] ?? 1 ) );
-		$per    = 20;
+		$filter  = sanitize_text_field( $_GET['csc_filter'] ?? 'pending' );
+		$search  = sanitize_text_field( $_GET['s'] ?? '' );
+		$paged   = max( 1, intval( $_GET['paged'] ?? 1 ) );
+		$per     = 20;
 
-		$query = new WP_User_Query( array(
-			'meta_key'   => '_csc_status',
-			'meta_value' => $filter,
-			'number'     => $per,
-			'offset'     => ( $paged - 1 ) * $per,
-			'orderby'    => 'display_name',
-			'order'      => 'ASC',
-		) );
+		$query_args = array(
+			'meta_key'    => '_csc_status',
+			'meta_value'  => $filter,
+			'number'      => $per,
+			'offset'      => ( $paged - 1 ) * $per,
+			'orderby'     => 'display_name',
+			'order'       => 'ASC',
+			'count_total' => true,
+		);
 
+		if ( $search ) {
+			$query_args['search']         = '*' . $search . '*';
+			$query_args['search_columns'] = array( 'display_name', 'user_email' );
+		}
+
+		$query = new WP_User_Query( $query_args );
 		$users = $query->get_results();
 		$total = $query->get_total();
+		$pages = ceil( $total / $per );
 
-		// Count totals for tab badges
+		// Count totals for tab badges (without search filter to always show full counts)
 		$counts = array();
 		foreach ( array( 'pending', 'approved', 'rejected' ) as $s ) {
-			$q           = new WP_User_Query( array( 'meta_key' => '_csc_status', 'meta_value' => $s, 'count_total' => true, 'number' => 0 ) );
-			$counts[ $s ] = $q->get_total();
+			$q          = new WP_User_Query( array( 'meta_key' => '_csc_status', 'meta_value' => $s, 'count_total' => true, 'number' => 0 ) );
+			$counts[$s] = $q->get_total();
 		}
 
 		$admin_nonce = wp_create_nonce( 'csc_admin_action' );
+		$base_url    = admin_url( 'admin.php?page=csc-members&csc_filter=' . $filter . ( $search ? '&s=' . urlencode( $search ) : '' ) );
+
+		$pagination_args = array(
+			'base'      => add_query_arg( 'paged', '%#%', $base_url ),
+			'format'    => '',
+			'current'   => $paged,
+			'total'     => $pages,
+			'prev_text' => '&laquo;',
+			'next_text' => '&raquo;',
+			'type'      => 'plain',
+		);
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline">CSC Members</h1>
 			<hr class="wp-header-end">
 
-			<ul class="subsubsub" style="margin-bottom:12px;">
-				<?php foreach ( array( 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected' ) as $s => $label ) : ?>
+			<!-- Status filter tabs -->
+			<ul class="subsubsub">
+				<?php
+				$statuses = array( 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected' );
+				$keys     = array_keys( $statuses );
+				foreach ( $statuses as $s => $label ) : ?>
 				<li>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=csc-members&csc_filter=' . $s ) ); ?>"
 					   class="<?php echo $filter === $s ? 'current' : ''; ?>">
 						<?php echo esc_html( $label ); ?>
-						<span class="count">(<?php echo intval( $counts[ $s ] ); ?>)</span>
+						<span class="count">(<?php echo intval( $counts[$s] ); ?>)</span>
 					</a>
-					<?php echo $s !== 'rejected' ? ' | ' : ''; ?>
+					<?php echo end( $keys ) !== $s ? ' | ' : ''; ?>
 				</li>
 				<?php endforeach; ?>
 			</ul>
 
+			<!-- Search form -->
+			<form method="GET" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" style="margin-top:8px;">
+				<input type="hidden" name="page" value="csc-members">
+				<input type="hidden" name="csc_filter" value="<?php echo esc_attr( $filter ); ?>">
+				<p class="search-box">
+					<label class="screen-reader-text" for="csc-member-search">Search Members</label>
+					<input type="search" id="csc-member-search" name="s"
+					       value="<?php echo esc_attr( $search ); ?>"
+					       placeholder="Search by name or email&hellip;">
+					<input type="submit" class="button" value="Search Members">
+					<?php if ( $search ) : ?>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=csc-members&csc_filter=' . $filter ) ); ?>"
+					   class="button" style="margin-left:4px;">Clear</a>
+					<?php endif; ?>
+				</p>
+			</form>
+
+			<!-- Top tablenav -->
+			<div class="tablenav top">
+				<div class="tablenav-pages <?php echo $pages <= 1 ? 'one-page' : ''; ?>">
+					<span class="displaying-num">
+						<?php echo number_format_i18n( $total ); ?> item<?php echo $total !== 1 ? 's' : ''; ?>
+					</span>
+					<?php if ( $pages > 1 ) : ?>
+					<span class="pagination-links">
+						<?php echo paginate_links( $pagination_args ); ?>
+					</span>
+					<?php endif; ?>
+				</div>
+				<br class="clear">
+			</div>
+
+			<!-- Table -->
 			<table class="wp-list-table widefat fixed striped users">
 				<thead>
 					<tr>
-						<th scope="col" class="column-name">Name</th>
-						<th scope="col">Email</th>
-						<th scope="col">Organisation</th>
-						<th scope="col">Job Title</th>
-						<th scope="col">Applied</th>
-						<th scope="col">Actions</th>
+						<th scope="col" class="column-name manage-column">Name</th>
+						<th scope="col" class="manage-column">Email</th>
+						<th scope="col" class="manage-column">Organisation</th>
+						<th scope="col" class="manage-column">Job Title</th>
+						<th scope="col" class="manage-column">Registered</th>
+						<th scope="col" class="manage-column">Actions</th>
 					</tr>
 				</thead>
 				<tbody id="csc-members-list">
 				<?php if ( empty( $users ) ) : ?>
 					<tr>
 						<td colspan="6" style="text-align:center;padding:24px;">
-							No members found with status: <strong><?php echo esc_html( $filter ); ?></strong>
+							<?php if ( $search ) : ?>
+								No members found matching <strong><?php echo esc_html( $search ); ?></strong>
+								with status <strong><?php echo esc_html( $filter ); ?></strong>.
+								<a href="<?php echo esc_url( admin_url( 'admin.php?page=csc-members&csc_filter=' . $filter ) ); ?>">Clear search</a>
+							<?php else : ?>
+								No members found with status: <strong><?php echo esc_html( $filter ); ?></strong>.
+							<?php endif; ?>
 						</td>
 					</tr>
 				<?php else : ?>
@@ -106,7 +169,7 @@ class Csc_Member_Admin {
 						$reg_date  = date_i18n( get_option( 'date_format' ), strtotime( $user->user_registered ) );
 					?>
 					<tr id="csc-row-<?php echo $user->ID; ?>">
-						<td>
+						<td class="column-name has-row-actions">
 							<strong>
 								<a href="<?php echo esc_url( get_edit_user_link( $user->ID ) ); ?>">
 									<?php echo esc_html( $user->display_name ); ?>
@@ -127,12 +190,21 @@ class Csc_Member_Admin {
 						<td><?php echo esc_html( $reg_date ); ?></td>
 						<td class="csc-action-cell">
 							<?php if ( $status === 'pending' ) : ?>
-								<button class="button button-primary csc-approve-btn" data-user="<?php echo esc_attr( $user->ID ); ?>" data-nonce="<?php echo esc_attr( $admin_nonce ); ?>">Approve</button>
-								<button class="button csc-reject-btn" data-user="<?php echo esc_attr( $user->ID ); ?>" data-nonce="<?php echo esc_attr( $admin_nonce ); ?>" style="margin-left:4px;">Reject</button>
+								<button class="button button-primary csc-approve-btn"
+								        data-user="<?php echo esc_attr( $user->ID ); ?>"
+								        data-nonce="<?php echo esc_attr( $admin_nonce ); ?>">Approve</button>
+								<button class="button csc-reject-btn"
+								        data-user="<?php echo esc_attr( $user->ID ); ?>"
+								        data-nonce="<?php echo esc_attr( $admin_nonce ); ?>"
+								        style="margin-left:4px;">Reject</button>
 							<?php elseif ( $status === 'rejected' ) : ?>
-								<button class="button button-primary csc-approve-btn" data-user="<?php echo esc_attr( $user->ID ); ?>" data-nonce="<?php echo esc_attr( $admin_nonce ); ?>">Approve</button>
+								<button class="button button-primary csc-approve-btn"
+								        data-user="<?php echo esc_attr( $user->ID ); ?>"
+								        data-nonce="<?php echo esc_attr( $admin_nonce ); ?>">Approve</button>
 							<?php elseif ( $status === 'approved' ) : ?>
-								<button class="button csc-reject-btn" data-user="<?php echo esc_attr( $user->ID ); ?>" data-nonce="<?php echo esc_attr( $admin_nonce ); ?>">Revoke Access</button>
+								<button class="button csc-reject-btn"
+								        data-user="<?php echo esc_attr( $user->ID ); ?>"
+								        data-nonce="<?php echo esc_attr( $admin_nonce ); ?>">Revoke Access</button>
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -145,26 +217,27 @@ class Csc_Member_Admin {
 						<th scope="col">Email</th>
 						<th scope="col">Organisation</th>
 						<th scope="col">Job Title</th>
-						<th scope="col">Applied</th>
+						<th scope="col">Registered</th>
 						<th scope="col">Actions</th>
 					</tr>
 				</tfoot>
 			</table>
 
-			<?php if ( $total > $per ) : ?>
+			<!-- Bottom tablenav -->
 			<div class="tablenav bottom">
-				<div class="tablenav-pages">
-					<?php
-					echo paginate_links( array(
-						'base'    => add_query_arg( 'paged', '%#%' ),
-						'format'  => '',
-						'current' => $paged,
-						'total'   => ceil( $total / $per ),
-					) );
-					?>
+				<div class="tablenav-pages <?php echo $pages <= 1 ? 'one-page' : ''; ?>">
+					<span class="displaying-num">
+						<?php echo number_format_i18n( $total ); ?> item<?php echo $total !== 1 ? 's' : ''; ?>
+					</span>
+					<?php if ( $pages > 1 ) : ?>
+					<span class="pagination-links">
+						<?php echo paginate_links( $pagination_args ); ?>
+					</span>
+					<?php endif; ?>
 				</div>
+				<br class="clear">
 			</div>
-			<?php endif; ?>
+
 		</div>
 
 		<script>
@@ -217,6 +290,12 @@ class Csc_Member_Admin {
 
 		update_user_meta( $user_id, '_csc_status', 'approved' );
 
+		// Sync to HubSpot if auto-sync is enabled
+		if ( get_option( 'csc_hubspot_auto_sync', '1' ) === '1' && get_option( 'csc_hubspot_token', '' ) ) {
+			$hs = new Csc_Hubspot();
+			$hs->sync_contact( $user_id );
+		}
+
 		// Send approval email with password-reset link
 		$user = get_user_by( 'ID', $user_id );
 		if ( $user ) {
@@ -263,6 +342,13 @@ class Csc_Member_Admin {
 		}
 
 		update_user_meta( $user_id, '_csc_status', 'rejected' );
+
+		// Update HubSpot contact status to revoked
+		if ( get_option( 'csc_hubspot_auto_sync', '1' ) === '1' && get_option( 'csc_hubspot_token', '' ) ) {
+			$hs = new Csc_Hubspot();
+			$hs->update_status( $user_id, 'revoked' );
+		}
+
 		wp_send_json_success();
 	}
 

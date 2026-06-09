@@ -466,12 +466,6 @@
             return;
         }
 
-        if (!$form.find('[name="consent_sharing"]').is(':checked') ||
-            !$form.find('[name="consent_directory"]').is(':checked')) {
-            showAlert($msg, 'Please accept the required consent statements to proceed.', 'error');
-            return;
-        }
-
         $btn.prop('disabled', true).text('Submitting\u2026');
 
         var data = {
@@ -519,12 +513,6 @@
         var $msg  = $('#csc-step2-message');
 
         clearAlert($msg);
-
-        if (!$form.find('[name="consent_sharing"]').is(':checked') ||
-            !$form.find('[name="consent_directory"]').is(':checked')) {
-            showAlert($msg, 'Please accept the required consent statements to proceed.', 'error');
-            return;
-        }
 
         $btn.prop('disabled', true).text('Submitting\u2026');
 
@@ -583,11 +571,13 @@
                     $('#csc-modal-overlay').fadeIn(200);
                 } else {
                     showAlert($msg, res.data.message, 'error');
+                    $('html, body').animate({ scrollTop: $msg.offset().top - 80 }, 300);
                 }
                 $btn.prop('disabled', false).text('Submit Application');
             },
             error: function () {
                 showAlert($msg, 'A network error occurred. Please try again.', 'error');
+                $('html, body').animate({ scrollTop: $msg.offset().top - 80 }, 300);
                 $btn.prop('disabled', false).text('Submit Application');
             },
         });

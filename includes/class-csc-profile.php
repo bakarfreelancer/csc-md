@@ -465,6 +465,12 @@ class Csc_Profile {
 		update_user_meta( $user->ID, '_csc_about',     sanitize_textarea_field( $_POST['about']   ?? '' ) );
 		update_user_meta( $user->ID, '_csc_expertise', sanitize_text_field( $_POST['expertise']   ?? '' ) );
 
+		// Sync updated profile to HubSpot (silently — failure doesn't block save)
+		if ( get_option( 'csc_hubspot_auto_sync', '1' ) === '1' && get_option( 'csc_hubspot_token', '' ) ) {
+			$hs = new Csc_Hubspot();
+			$hs->sync_contact( $user->ID );
+		}
+
 		wp_send_json_success( array( 'message' => 'Personal details saved successfully.' ) );
 	}
 
@@ -521,6 +527,19 @@ class Csc_Profile {
 		}
 		if ( isset( $_POST['org_description'] ) ) {
 			update_post_meta( $org_id, '_csc_org_description', sanitize_textarea_field( $_POST['org_description'] ) );
+		}
+
+		// Sync company changes to HubSpot for all members of this org
+		if ( get_option( 'csc_hubspot_auto_sync', '1' ) === '1' && get_option( 'csc_hubspot_token', '' ) ) {
+			$hs      = new Csc_Hubspot();
+			$members = get_users( array(
+				'meta_key'   => '_csc_organisation_id',
+				'meta_value' => $org_id,
+				'fields'     => 'ID',
+			) );
+			foreach ( $members as $member_id ) {
+				$hs->sync_contact( intval( $member_id ) );
+			}
 		}
 
 		wp_send_json_success( array( 'message' => 'Company information saved successfully.' ) );

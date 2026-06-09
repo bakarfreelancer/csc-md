@@ -47,9 +47,15 @@ class Csc_Md {
 			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-csc-seeder.php';
 		}
 
+		// Integrations & import
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-csc-hubspot.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-csc-email-queue.php';
+
 		// Admin
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-csc-md-admin.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-csc-member-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-csc-integrations.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-csc-import.php';
 
 		// Public
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-csc-md-public.php';
@@ -70,6 +76,14 @@ class Csc_Md {
 		// CSC member admin panel
 		$member_admin = new Csc_Member_Admin();
 		$member_admin->register_hooks( $this->loader );
+
+		// Integrations settings page
+		$integrations = new Csc_Integrations();
+		$integrations->register_hooks( $this->loader );
+
+		// Bulk import page
+		$import = new Csc_Import();
+		$import->register_hooks( $this->loader );
 	}
 
 	private function define_public_hooks() {
@@ -114,6 +128,10 @@ class Csc_Md {
 		// Terms of Use
 		$terms = new Csc_Terms();
 		$terms->register_hooks();
+
+		// Email queue cron
+		$email_queue = new Csc_Email_Queue();
+		$email_queue->register_hooks();
 
 		// Test data seeder (admin only)
 		if ( is_admin() ) {

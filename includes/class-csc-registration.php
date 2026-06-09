@@ -768,10 +768,7 @@ window.cscRegIgp        = <?php echo wp_json_encode( Csc_Organisations::get_igp_
 		if ( email_exists( $email ) ) {
 			wp_send_json_error( array( 'message' => 'An account with this email address already exists. Please log in.' ) );
 		}
-		if ( ! $consent_sharing || ! $consent_directory ) {
-			wp_send_json_error( array( 'message' => 'Please accept the required consent statements to proceed.' ) );
-		}
-
+	
 		// Handle new organisation registration
 		if ( $register_new ) {
 			$org_name        = sanitize_text_field( $_POST['org_name']        ?? '' );
