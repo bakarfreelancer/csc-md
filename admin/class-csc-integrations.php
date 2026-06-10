@@ -18,7 +18,8 @@ class Csc_Integrations {
 		$loader->add_action( 'wp_ajax_csc_eq_send_all', $this, 'ajax_eq_send_all' );
 		$loader->add_action( 'wp_ajax_csc_eq_retry',   $this, 'ajax_eq_retry' );
 		$loader->add_action( 'wp_ajax_csc_eq_clear',   $this, 'ajax_eq_clear' );
-		$loader->add_action( 'wp_ajax_csc_eq_stats',   $this, 'ajax_eq_stats' );
+		$loader->add_action( 'wp_ajax_csc_eq_stats',      $this, 'ajax_eq_stats' );
+		$loader->add_action( 'wp_ajax_csc_hs_bulk_sync',   $this, 'ajax_bulk_sync' );
 	}
 
 	/* -----------------------------------------------------------------------
@@ -123,6 +124,22 @@ class Csc_Integrations {
 				<button type="button" class="button" id="csc-hs-clear-errors" style="margin-left:8px;">Clear Error Log</button>
 				<span id="csc-hs-retry-result" style="margin-left:8px;"></span>
 				<?php endif; ?>
+			</div>
+
+			<!-- Bulk Sync -->
+			<div class="csc-int-section card" style="max-width:800px;padding:20px 24px;margin-bottom:24px;">
+				<h2 style="margin-top:0;">Bulk Sync to HubSpot</h2>
+				<p style="color:#6b7280;margin-top:0;">Push all approved members and their companies to HubSpot. Existing HubSpot records will be updated; new records will be created. This may take a while for large member lists.</p>
+				<p>
+					<button type="button" class="button button-primary" id="csc-hs-bulk-sync">Sync All Approved Members</button>
+					<span id="csc-hs-bulk-sync-result" style="margin-left:12px;"></span>
+				</p>
+				<div id="csc-hs-bulk-sync-progress" style="display:none;">
+					<div style="background:#e5e7eb;border-radius:4px;height:16px;overflow:hidden;max-width:400px;">
+						<div id="csc-hs-bulk-progress-bar" style="background:#2563eb;height:100%;width:0%;transition:width 0.3s;"></div>
+					</div>
+					<p id="csc-hs-bulk-progress-label" style="margin-top:4px;color:#6b7280;font-size:13px;">Syncing…</p>
+				</div>
 			</div>
 
 			<!-- Email Queue -->
@@ -263,6 +280,32 @@ class Csc_Integrations {
 					}
 				});
 			}, 15000);
+
+			// Bulk sync
+			$('#csc-hs-bulk-sync').on('click', function(){
+				if (!confirm('This will sync all approved members to HubSpot. Continue?')) return;
+				var $btn = $(this).prop('disabled', true).text('Syncing…');
+				$('#csc-hs-bulk-sync-result').text('');
+				$('#csc-hs-bulk-sync-progress').show();
+				$('#csc-hs-bulk-progress-bar').css('width', '0%');
+				$('#csc-hs-bulk-progress-label').text('Syncing…');
+
+				ajax('csc_hs_bulk_sync', {}, function(res){
+					$btn.prop('disabled', false).text('Sync All Approved Members');
+					$('#csc-hs-bulk-sync-progress').hide();
+					if (res.success) {
+						var d = res.data;
+						$('#csc-hs-bulk-progress-bar').css({ width: '100%', background: '#16a34a' });
+						$('#csc-hs-bulk-sync-result')
+							.css('color', d.failed > 0 ? '#d97706' : '#16a34a')
+							.text(d.total + ' members processed: ' + d.success + ' synced, ' + d.failed + ' failed.');
+					} else {
+						$('#csc-hs-bulk-sync-result')
+							.css('color', 'red')
+							.text(res.data ? res.data.message : 'Error.');
+					}
+				});
+			});
 		});
 		</script>
 		<?php
@@ -397,5 +440,41 @@ class Csc_Integrations {
 		$html = ob_get_clean();
 
 		wp_send_json_success( array( 'html' => $html ) );
+	}
+
+	public function ajax_bulk_sync() {
+		$this->verify();
+
+		$hs    = new Csc_Hubspot();
+		$token = get_option( 'csc_hubspot_token', '' );
+
+		if ( ! $token ) {
+			wp_send_json_error( array( 'message' => 'HubSpot token not configured.' ) );
+		}
+
+		$users = get_users( array(
+			'meta_key'   => '_csc_status',
+			'meta_value' => 'approved',
+			'fields'     => 'ID',
+			'number'     => -1,
+		) );
+
+		$success = 0;
+		$failed  = 0;
+
+		foreach ( $users as $uid ) {
+			$r = $hs->sync_contact( intval( $uid ) );
+			if ( is_wp_error( $r ) ) {
+				$failed++;
+			} else {
+				$success++;
+			}
+		}
+
+		wp_send_json_success( array(
+			'success' => $success,
+			'failed'  => $failed,
+			'total'   => count( $users ),
+		) );
 	}
 }

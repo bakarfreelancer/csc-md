@@ -529,9 +529,12 @@ class Csc_Profile {
 			update_post_meta( $org_id, '_csc_org_description', sanitize_textarea_field( $_POST['org_description'] ) );
 		}
 
-		// Sync company changes to HubSpot for all members of this org
+		// Sync company changes to HubSpot
 		if ( get_option( 'csc_hubspot_auto_sync', '1' ) === '1' && get_option( 'csc_hubspot_token', '' ) ) {
-			$hs      = new Csc_Hubspot();
+			$hs = new Csc_Hubspot();
+			// Update the company record in HubSpot
+			$hs->sync_company( $org_id );
+			// Re-sync all members of this org so their contact records stay in sync
 			$members = get_users( array(
 				'meta_key'   => '_csc_organisation_id',
 				'meta_value' => $org_id,

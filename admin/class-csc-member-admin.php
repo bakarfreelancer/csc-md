@@ -343,10 +343,10 @@ class Csc_Member_Admin {
 
 		update_user_meta( $user_id, '_csc_status', 'rejected' );
 
-		// Update HubSpot contact status to revoked
+		// Sync updated status to HubSpot
 		if ( get_option( 'csc_hubspot_auto_sync', '1' ) === '1' && get_option( 'csc_hubspot_token', '' ) ) {
 			$hs = new Csc_Hubspot();
-			$hs->update_status( $user_id, 'revoked' );
+			$hs->sync_contact( $user_id );
 		}
 
 		wp_send_json_success();
